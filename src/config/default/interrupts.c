@@ -65,7 +65,6 @@ void UART1_RX_InterruptHandler( void );
 void UART1_TX_InterruptHandler( void );
 void DMA0_InterruptHandler( void );
 void DMA1_InterruptHandler( void );
-void UART1_Callback();
 void UART2ErrorCallback();
 void UART2RXCallback();
 void UART2_FAULT_InterruptHandler( void );
@@ -98,7 +97,6 @@ void __ISR(_UART1_RX_VECTOR, ipl1AUTO) UART1_RX_Handler (void)
 void __ISR(_UART1_TX_VECTOR, ipl1AUTO) UART1_TX_Handler (void)
 {
     UART1_TX_InterruptHandler();
-    UART1_Callback();
 }
 
 void __ISR(_DMA0_VECTOR, ipl1AUTO) DMA0_Handler (void)
@@ -114,18 +112,18 @@ void __ISR(_DMA1_VECTOR, ipl1AUTO) DMA1_Handler (void)
 void __ISR(_UART2_FAULT_VECTOR, ipl1AUTO) UART2_FAULT_Handler (void)
 {
     UART2ErrorCallback();
-    UART2_FAULT_InterruptHandler();
+    //UART2_FAULT_InterruptHandler();
 }
 
 void __ISR(_UART2_RX_VECTOR, ipl1AUTO) UART2_RX_Handler (void)
 {
     UART2RXCallback();
-    UART2_RX_InterruptHandler();
+    //UART2_RX_InterruptHandler();
 }
 
 void __ISR(_UART2_TX_VECTOR, ipl1AUTO) UART2_TX_Handler (void)
 {
-    UART2_TX_InterruptHandler();
+    //UART2_TX_InterruptHandler();
 }
 
 
