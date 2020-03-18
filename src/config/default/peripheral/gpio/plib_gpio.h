@@ -93,6 +93,22 @@
 #define P1_BREAK_CTRL_OutputEnable()      (TRISFCLR = (1<<13))
 #define P1_BREAK_CTRL_InputEnable()       (TRISFSET = (1<<13))
 #define P1_BREAK_CTRL_PIN                  GPIO_PIN_RF13
+/*** Macros for OLED_SA0 pin ***/
+#define OLED_SA0_Set()               (LATFSET = (1<<12))
+#define OLED_SA0_Clear()             (LATFCLR = (1<<12))
+#define OLED_SA0_Toggle()            (LATFINV= (1<<12))
+#define OLED_SA0_Get()               ((PORTF >> 12) & 0x1)
+#define OLED_SA0_OutputEnable()      (TRISFCLR = (1<<12))
+#define OLED_SA0_InputEnable()       (TRISFSET = (1<<12))
+#define OLED_SA0_PIN                  GPIO_PIN_RF12
+/*** Macros for OLED_RST pin ***/
+#define OLED_RST_Set()               (LATFSET = (1<<2))
+#define OLED_RST_Clear()             (LATFCLR = (1<<2))
+#define OLED_RST_Toggle()            (LATFINV= (1<<2))
+#define OLED_RST_Get()               ((PORTF >> 2) & 0x1)
+#define OLED_RST_OutputEnable()      (TRISFCLR = (1<<2))
+#define OLED_RST_InputEnable()       (TRISFSET = (1<<2))
+#define OLED_RST_PIN                  GPIO_PIN_RF2
 /*** Macros for LED1 pin ***/
 #define LED1_Set()               (LATESET = (1<<3))
 #define LED1_Clear()             (LATECLR = (1<<3))

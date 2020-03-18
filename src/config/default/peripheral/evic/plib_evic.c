@@ -55,15 +55,18 @@ void EVIC_Initialize( void )
 
     /* Set up priority / subpriority of enabled interrupts */
     IPC1SET = 0x4 | 0x0;  /* TIMER_1:  Priority 1 / Subpriority 0 */
-    IPC2SET = 0x400 | 0x0;  /* TIMER_2:  Priority 1 / Subpriority 0 */
     IPC28SET = 0x4 | 0x0;  /* UART1_FAULT:  Priority 1 / Subpriority 0 */
     IPC28SET = 0x400 | 0x0;  /* UART1_RX:  Priority 1 / Subpriority 0 */
     IPC28SET = 0x40000 | 0x0;  /* UART1_TX:  Priority 1 / Subpriority 0 */
     IPC33SET = 0x40000 | 0x0;  /* DMA0:  Priority 1 / Subpriority 0 */
     IPC33SET = 0x4000000 | 0x0;  /* DMA1:  Priority 1 / Subpriority 0 */
+    IPC35SET = 0x4000000 | 0x0;  /* SPI2_RX:  Priority 1 / Subpriority 0 */
+    IPC36SET = 0x4 | 0x0;  /* SPI2_TX:  Priority 1 / Subpriority 0 */
     IPC36SET = 0x400 | 0x0;  /* UART2_FAULT:  Priority 1 / Subpriority 0 */
     IPC36SET = 0x40000 | 0x0;  /* UART2_RX:  Priority 1 / Subpriority 0 */
     IPC36SET = 0x4000000 | 0x0;  /* UART2_TX:  Priority 1 / Subpriority 0 */
+    IPC37SET = 0x4 | 0x0;  /* I2C2_BUS:  Priority 1 / Subpriority 0 */
+    IPC37SET = 0x40000 | 0x0;  /* I2C2_MASTER:  Priority 1 / Subpriority 0 */
 }
 
 void EVIC_SourceEnable( INT_SOURCE source )

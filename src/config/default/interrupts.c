@@ -59,17 +59,21 @@
 
 
 void TIMER_1_InterruptHandler( void );
-void TIMER_2_InterruptHandler( void );
 void UART1_FAULT_InterruptHandler( void );
 void UART1_RX_InterruptHandler( void );
 void UART1_TX_InterruptHandler( void );
 void DMA0_InterruptHandler( void );
 void DMA1_InterruptHandler( void );
+void SPI2_RX_InterruptHandler( void );
+void SPI2_TX_InterruptHandler( void );
+void UART1_Callback();
 void UART2ErrorCallback();
 void UART2RXCallback();
 void UART2_FAULT_InterruptHandler( void );
 void UART2_RX_InterruptHandler( void );
 void UART2_TX_InterruptHandler( void );
+void I2C2_BUS_InterruptHandler( void );
+void I2C2_MASTER_InterruptHandler( void );
 
 
 
@@ -79,24 +83,20 @@ void __ISR(_TIMER_1_VECTOR, ipl1AUTO) TIMER_1_Handler (void)
     TIMER_1_InterruptHandler();
 }
 
-void __ISR(_TIMER_2_VECTOR, ipl1AUTO) TIMER_2_Handler (void)
-{
-    TIMER_2_InterruptHandler();
-}
-
 void __ISR(_UART1_FAULT_VECTOR, ipl1AUTO) UART1_FAULT_Handler (void)
 {
-    UART1_FAULT_InterruptHandler();
+    //UART1_FAULT_InterruptHandler();
 }
 
 void __ISR(_UART1_RX_VECTOR, ipl1AUTO) UART1_RX_Handler (void)
 {
-    UART1_RX_InterruptHandler();
+    //UART1_RX_InterruptHandler();
 }
 
 void __ISR(_UART1_TX_VECTOR, ipl1AUTO) UART1_TX_Handler (void)
 {
-    UART1_TX_InterruptHandler();
+    //UART1_TX_InterruptHandler();
+    UART1_Callback();
 }
 
 void __ISR(_DMA0_VECTOR, ipl1AUTO) DMA0_Handler (void)
@@ -107,6 +107,16 @@ void __ISR(_DMA0_VECTOR, ipl1AUTO) DMA0_Handler (void)
 void __ISR(_DMA1_VECTOR, ipl1AUTO) DMA1_Handler (void)
 {
     DMA1_InterruptHandler();
+}
+
+void __ISR(_SPI2_RX_VECTOR, ipl1AUTO) SPI2_RX_Handler (void)
+{
+    SPI2_RX_InterruptHandler();
+}
+
+void __ISR(_SPI2_TX_VECTOR, ipl1AUTO) SPI2_TX_Handler (void)
+{
+    SPI2_TX_InterruptHandler();
 }
 
 void __ISR(_UART2_FAULT_VECTOR, ipl1AUTO) UART2_FAULT_Handler (void)
@@ -124,6 +134,16 @@ void __ISR(_UART2_RX_VECTOR, ipl1AUTO) UART2_RX_Handler (void)
 void __ISR(_UART2_TX_VECTOR, ipl1AUTO) UART2_TX_Handler (void)
 {
     //UART2_TX_InterruptHandler();
+}
+
+void __ISR(_I2C2_BUS_VECTOR, ipl1AUTO) I2C2_BUS_Handler (void)
+{
+    I2C2_BUS_InterruptHandler();
+}
+
+void __ISR(_I2C2_MASTER_VECTOR, ipl1AUTO) I2C2_MASTER_Handler (void)
+{
+    I2C2_MASTER_InterruptHandler();
 }
 
 
