@@ -27,6 +27,7 @@
 #include <stdlib.h>                     // Defines EXIT_FAILURE
 #include "definitions.h"                // SYS function prototypes
 #include "main.h"
+#include "cli.h"
 
 uint8_t __attribute__ ((coherent)) channelBufferA [513];
 uint8_t __attribute__ ((coherent)) channelBufferB [513];
@@ -37,6 +38,8 @@ void *TXSrcAddr = (uint8_t *) channelBufferA;
 void *RXDestAddr = (uint8_t *) channelBufferB;
 size_t size = 513;
 uint8_t dummyData;
+uint16_t currKeypadData;
+uint16_t prevKeypadData;
 
 void ResetTimer1(uint16_t period)
 {
@@ -138,6 +141,64 @@ void UART2ErrorCallback()
     UART2_ErrorGet();
 }
 
+static void TMR2Callback (uint32_t status, uintptr_t context)
+{
+    KEYPAD_PL_Set();
+    SPI2_Read(&currKeypadData, 2);
+}
+
+void SPI2Callback (uintptr_t context)
+{
+    if(currKeypadData)
+    {
+        uint16_t pressedButton = 0;
+        int i;
+        for(i = 0; i < 15; i++)
+        {
+            if(((currKeypadData >> i) & 1) && !((prevKeypadData >> i) & 1))
+            {
+                pressedButton = i + 1;
+                break;
+            }
+        }
+        switch(pressedButton)
+        {
+            case 1 ... 3:
+                CLI_AddToCommand(pressedButton + 6);
+                break;
+            case 4:
+                CLI_AddToCommand(Thru);
+                break;
+            case 5 ... 7:
+                CLI_AddToCommand(pressedButton - 1);
+                break;
+            case 8:
+                CLI_AddToCommand(At);
+                break;
+            case 9 ... 11:
+                CLI_AddToCommand(pressedButton - 8);
+                break;
+            case 12:
+                CLI_AddToCommand(Full);
+                break;
+            case 13:
+                CLI_AddToCommand(Clear);
+                break;
+            case 14:
+                CLI_AddToCommand(0);
+                break;
+            case 15:
+                CLI_AddToCommand(Bksp);
+                break;
+            case 16:
+                CLI_AddToCommand(Enter);
+                break;
+            default:
+                break;
+        }
+    }
+}
+
 // *****************************************************************************
 // *****************************************************************************
 // Section: Main Entry Point
@@ -157,8 +218,10 @@ int main ( void )
     TXStep = BREAK;
     
     TMR1_CallbackRegister(TMR1Callback, (uintptr_t)NULL);
+    TMR1_CallbackRegister(TMR2Callback, (uintptr_t)NULL);
     DMAC_ChannelCallbackRegister(DMAC_CHANNEL_0, DMAC0_Callback, (uintptr_t)NULL);
     DMAC_ChannelCallbackRegister(DMAC_CHANNEL_1, DMAC1_Callback, (uintptr_t)NULL);
+    SPI2_CallbackRegister(&SPI2Callback, (uintptr_t)NULL);
     //UART Callback is registered in the interrupts file
     
     //UART2 Interrupt Enables
@@ -170,7 +233,12 @@ int main ( void )
 //    for(i = 1; i < 513; i++) channelBufferA[i] = 0x55;
 //    for(i = 1; i < 513; i++) channelBufferB[i] = 0xAA;
     
+    CLI_Init(TXSrcAddr);
+    
     TMR1_Start();
+    
+    KEYPAD_PL_Clear();
+    TMR2_Start();
     
     while ( true )
     {
