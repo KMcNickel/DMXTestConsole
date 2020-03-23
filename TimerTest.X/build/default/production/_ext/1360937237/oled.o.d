@@ -1,5 +1,5 @@
-build/default/production/_ext/1360937237/main.o:  \
-../src/main.c  \
+build/default/production/_ext/1360937237/oled.o:  \
+../src/oled.c  \
  ../src/config/default/definitions.h  \
  ../src/config/default/peripheral/i2c/plib_i2c2.h  \
  ../src/config/default/peripheral/i2c/plib_i2c_master.h  \
@@ -19,5 +19,5 @@ build/default/production/_ext/1360937237/main.o:  \
  ../src/config/default/peripheral/spi/plib_spi2.h  \
  ../src/config/default/peripheral/spi/plib_spi_common.h  \
 ../src/main.h  \
- ../src/cli.h  \
-../src/oled.h 
+ ../src/oled.h  \
+../src/font_table.h 

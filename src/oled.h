@@ -15,8 +15,8 @@
  */
 /* ************************************************************************** */
 
-#ifndef _DMX_CLI_H    /* Guard against multiple inclusion */
-#define _DMX_CLI_H
+#ifndef _OLED_H    /* Guard against multiple inclusion */
+#define _OLED_H
 
 
 /* ************************************************************************** */
@@ -65,28 +65,43 @@ extern "C" {
       @Remarks
         Any additional remarks
      */
-#define CLI_MAX_ITEMS 33
-#define CLI_COMMAND_START 600
-#define SWITCH_VALID_CHANNELS 1 ... 512
-#define SWITCH_VALID_RAW_VALUES 0 ... 255
-#define SWITCH_VALID_PERCENT_VALUES 0 ... 100
-#define SWITCH_VALID_PRESETS 1 ... 20
-#define SWITCH_VALID_TIME 0 ... 60
 
-#define Thru 601
-#define At 602
-#define Full 603
-#define Enter 604
-#define Bksp 605
-#define Clear 606
-#define Plus 607
-#define Minus 608
-#define Last 609
-#define Next 610
-#define Record 611
-#define Preset 612
-#define Offset 613
-#define Time 614
+#define SSD1305_ADDRESS 0x3C
+    
+#define SSD1305_SETLOWCOLUMN 0x00
+#define SSD1305_SETHIGHCOLUMN 0x10
+#define SSD1305_MEMORYMODE 0x20
+#define SSD1305_SETCOLADDR 0x21
+#define SSD1305_SETPAGEADDR 0x22
+#define SSD1305_SETSTARTLINE 0x40
+
+#define SSD1305_SETCONTRAST 0x81
+#define SSD1305_SETBRIGHTNESS 0x82
+
+#define SSD1305_SETLUT 0x91
+
+#define SSD1305_SEGREMAP 0xA0
+#define SSD1305_DISPLAYALLON_RESUME 0xA4
+#define SSD1305_DISPLAYALLON 0xA5
+#define SSD1305_NORMALDISPLAY 0xA6
+#define SSD1305_INVERTDISPLAY 0xA7
+#define SSD1305_SETMULTIPLEX 0xA8
+#define SSD1305_DISPLAYDIM 0xAC
+#define SSD1305_MASTERCONFIG 0xAD
+#define SSD1305_DISPLAYOFF 0xAE
+#define SSD1305_DISPLAYON 0xAF
+
+#define SSD1305_SETPAGESTART 0xB0
+
+#define SSD1305_COMSCANINC 0xC0
+#define SSD1305_COMSCANDEC 0xC8
+#define SSD1305_SETDISPLAYOFFSET 0xD3
+#define SSD1305_SETDISPLAYCLOCKDIV 0xD5
+#define SSD1305_SETAREACOLOR 0xD8
+#define SSD1305_SETPRECHARGE 0xD9
+#define SSD1305_SETCOMPINS 0xDA
+#define SSD1305_SETVCOMLEVEL 0xDB
+
     // *****************************************************************************
     // *****************************************************************************
     // Section: Data Types
@@ -119,43 +134,23 @@ extern "C" {
         Describe enumeration elements and structure and union members above each 
         element or member.
      */
-    
-    enum CommandSectionCompleteStatus
-    {
-        CLI_COMMAND_SECTION_NEW,
-        CLI_COMMAND_SECTION_CHANNEL,
-        CLI_COMMAND_SECTION_CHANNEL_ADD,
-        CLI_COMMAND_SECTION_CHANNEL_REMOVE,
-        CLI_COMMAND_SECTION_CHANNEL_THRU,
-        CLI_COMMAND_SECTION_OFFSET,
-        CLI_COMMAND_SECTION_OFFSET_ENTERED,
-        CLI_COMMAND_SECTION_VALUE,
-        CLI_COMMAND_SECTION_VALUE_ENTERED,
-        CLI_COMMAND_SECTION_VALUE_INCREMENT,
-        CLI_COMMAND_SECTION_VALUE_INCREMENT_ENTERED,
-        CLI_COMMAND_SECTION_VALUE_DECREMENT,
-        CLI_COMMAND_SECTION_VALUE_DECREMENT_ENTERED,
-        CLI_COMMAND_SECTION_VALUE_THRU,
-        CLI_COMMAND_SECTION_VALUE_THRU_ENTERED,
-        CLI_COMMAND_SECTION_TIME,
-        CLI_COMMAND_SECTION_TIME_ENTERED,
-        CLI_COMMAND_SECTION_RECORD,
-        CLI_COMMAND_SECTION_RECORD_ENTERED,
-        CLI_COMMAND_SECTION_PLAYBACK,
-        CLI_COMMAND_SECTION_PLAYBACK_ENTERED,
-        CLI_COMMAND_SECTION_COMPLETE,
-        CLI_COMMAND_COMPLETE,
-        CLI_COMMAND_SECTION_ERROR
-    };
-    
-    struct CLI_Data {
-        uint16_t command[CLI_MAX_ITEMS];
-        uint8_t counter;
-        uint16_t chLow;
-        uint16_t chHigh;
-        uint8_t* values;
-    };
 
+    enum OLED_States 
+    {
+        OLED_STATE_Idle,
+        OLED_STATE_InitList,
+        OLED_STATE_DrawScreen,
+        OLED_STATE_DispOn,
+        OLED_STATE_Waiting
+    };
+    
+    
+    enum OLED_DrawStates
+    {
+        OLED_STATE_DrawIdle,
+        OLED_STATE_SetParams,
+        OLED_STATE_Data
+    };
 
     // *****************************************************************************
     // *****************************************************************************
@@ -211,9 +206,16 @@ extern "C" {
             return 3;
         }
      */
-    void CLI_Init(uint8_t* dmxBuf);
-    void CLI_AddToCommand(uint16_t function);
-
+void OLED_Init();
+bool OLED_DrawScreen();
+void OLED_Checkerboard();
+void OLED_Blank();
+void OLED_Fill();
+void OLED_Char(uint8_t* character, uint8_t column, uint8_t page);
+void OLED_CharASCII(char character, uint8_t column, uint8_t page);
+void OLED_String(char* str, uint8_t len, uint8_t column, uint8_t page);
+bool OLED_IsReady();
+void OLED_ClearLine(uint8_t line);
 
     /* Provide C++ Compatibility */
 #ifdef __cplusplus

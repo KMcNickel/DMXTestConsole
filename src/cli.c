@@ -29,6 +29,7 @@
 #include "definitions.h"                // SYS function prototypes
 #include "cli.h"
 #include <stdio.h>
+#include "oled.h"
 /* TODO:  Include other files here if needed. */
 
 
@@ -39,6 +40,8 @@
 /* ************************************************************************** */
 
 struct CLI_Data cliData;
+//uint16_t concat[CLI_MAX_ITEMS];
+//struct CommandSectionData csData[CLI_MAX_ITEMS];
 
 /*  A brief description of a section can be given directly below the section
     banner.
@@ -73,139 +76,597 @@ struct CLI_Data cliData;
 /*  A brief description of a section can be given directly below the section
     banner.
  */
-void CLI_AddItem(uint16_t function)
+    void CLI_AddItem(uint16_t function)
     {
-        cliData.command[cliData.counter] = function;
-        cliData.counter++;
-    }
-    
-    bool CLI_AddNumeric(uint16_t digit, bool channel)
-    {
-        uint16_t val = (cliData.command[cliData.counter] * 10) + digit;
-        if((channel && val >= 1 && val <= 512) || 
-           (!channel && val >= 0 && val <= 255))
+        bool counterWasZero = cliData.counter == 0;
+        if(function > CLI_COMMAND_START)
         {
-            cliData.command[cliData.counter] = val;
+            cliData.command[cliData.counter] = function;
             cliData.counter++;
-            return true;
         }
-        return false;
-    }
-    
-    void CLI_RemoveNumeric()
-    {
-        uint16_t val = (cliData.command[cliData.counter] / 10);
-        cliData.command[cliData.counter] = val;
-        if(val == 0) cliData.counter--;
-    }
-    
-    void CLI_RemoveItem()
-    {
-        cliData.command[cliData.counter] = 0;
-        cliData.counter--;
-    }
-
-    char* CLI_GetString(uint16_t value)
-    {
-        char* buf = "";
-        switch(value)
+        else
         {
-            case Thru:
-                return "Thru";
-            case At:
-                return "At";
-            case Full:
-                return "Full";
-            case Enter:
-                return "*";
-            default:
-                sprintf(buf, "%d", value);
-                return buf;
+            if(counterWasZero)
+                cliData.counter++;
+            
+            uint16_t result = (cliData.command[cliData.counter - 1] * 10)
+                    + function;
+            if(result > CLI_COMMAND_START)
+            {
+                cliData.command[cliData.counter] = function;
+                cliData.counter++;
+            }
+            else
+            {
+                cliData.command[cliData.counter - 1] = result;
+            }
         }
     }
     
-    void CLI_PrintCommand(bool processed)
+    void CLI_RemoveLastItem()
     {
-        char buf[6] = "";
-        switch(cliData.counter)
+        if(cliData.counter == 0)
+            return;
+        if(cliData.command[cliData.counter - 1] > CLI_COMMAND_START)
         {
-            case 0:
-                sprintf(buf, "%s", CLI_GetString(cliData.command[0]));
-                break;
-            case 1:
-                sprintf(buf, "%s %s", 
-                        CLI_GetString(cliData.command[0]), 
-                        CLI_GetString(cliData.command[1]));
-                break;
-            case 2:
-                sprintf(buf, "%s %s %s", 
-                        CLI_GetString(cliData.command[0]), 
-                        CLI_GetString(cliData.command[1]), 
-                        CLI_GetString(cliData.command[2]));
-                break;
-            case 3:
-                sprintf(buf, "%s %s %s %s", 
-                        CLI_GetString(cliData.command[0]), 
-                        CLI_GetString(cliData.command[1]), 
-                        CLI_GetString(cliData.command[2]), 
-                        CLI_GetString(cliData.command[3]));
-                break;
-            case 4:
-                if(processed)
-                {
-                    sprintf(buf, "%s %s %s %s %s *", 
-                            CLI_GetString(cliData.command[0]), 
-                            CLI_GetString(cliData.command[1]), 
-                            CLI_GetString(cliData.command[2]), 
-                            CLI_GetString(cliData.command[3]), 
-                            CLI_GetString(cliData.command[4]));
-                }
-                else
-                {
-                    sprintf(buf, "%s %s %s %s %s", 
-                            CLI_GetString(cliData.command[0]), 
-                            CLI_GetString(cliData.command[1]), 
-                            CLI_GetString(cliData.command[2]), 
-                            CLI_GetString(cliData.command[3]), 
-                            CLI_GetString(cliData.command[4]));
-                }
-                break;
-            default:
-                break;
+            cliData.command[cliData.counter - 1] = 0;
+            cliData.counter--;
         }
-        //DO SOMETHING WITH buf
-    }
-
-    void CLI_PrintError (uint16_t function)
-    {
-        char* buf = "";
-        sprintf(buf, "%s is an invalid key", CLI_GetString(function));
-        //DO SOMETHING WITH buf
+        else
+        {
+            cliData.command[cliData.counter - 1] = 
+                    cliData.command[cliData.counter - 1] / 10;
+            cliData.counter--;
+        }
     }
     
-    void CLI_ProcessCommand()
+    void CLI_Clear()
     {
-        CLI_PrintCommand(true);
-        if(cliData.command[2] < cliData.command[0])
-        {
-            uint16_t tmp = cliData.command[0];
-            cliData.command[0] = cliData.command[2];
-            cliData.command[2] = tmp;
-        }
-        cliData.chLow = cliData.command[0];
-        cliData.chHigh = cliData.command[2];
-        uint8_t* follower = cliData.values + cliData.command[0];
-        uint8_t* tail = cliData.values + cliData.command[2];
-        do
-        {
-            *follower = cliData.command[4];
-            follower++;
-        }
-        while(follower != tail);
-        for(cliData.counter = 0; cliData.counter < 5; cliData.counter++)
+        for(cliData.counter = 0; 
+                cliData.counter < CLI_MAX_ITEMS; cliData.counter++)
             cliData.command[cliData.counter] = 0;
         cliData.counter = 0;
     }
+       
+    bool CLI_ProcessCommand()
+    {
+        uint16_t i, j;
+        bool secActiveChannels[513];
+        bool activeChannels[513];
+        uint8_t chVals[513];
+        bool useTXActiveChannels = false;
+        int16_t thruPrefix;
+        uint8_t lowVal;
+        uint8_t highVal;
+        int16_t valIncDec;
+        uint16_t offset;
+        uint16_t offsetShift;
+        uint8_t time;
+        uint8_t presetNum;
+        enum CommandSectionCompleteStatus cmdStatus = CLI_COMMAND_SECTION_NEW;
+        
+        for(i = 0; i < cliData.counter; i++)
+        {
+            switch(cmdStatus)
+            {
+                case CLI_COMMAND_SECTION_NEW:
+                    for(j = 0; j < 513; j++)
+                    {
+                        secActiveChannels[j] = false;
+                        activeChannels[j] = false;
+                        chVals[j] = 0;
+                    }
+                        
+                    lowVal = 0;
+                    highVal = 0;
+                    offset = 0;
+                    offsetShift = 0;
+                    time = 0;
+                    presetNum = 0;
+                    thruPrefix = CLI_COMMAND_START;
+                    useTXActiveChannels = false;
+                    valIncDec = 0;
+                    switch(cliData.command[i])
+                    {
+                        case Record:
+                            cmdStatus = CLI_COMMAND_SECTION_RECORD;
+                            break;
+                        case Preset:
+                            cmdStatus = CLI_COMMAND_SECTION_PLAYBACK;
+                            break;
+                        case Minus:
+                            useTXActiveChannels = true;
+                            cmdStatus = CLI_COMMAND_SECTION_VALUE_DECREMENT;
+                            break;
+                        case Plus:
+                            useTXActiveChannels = true;
+                            cmdStatus = CLI_COMMAND_SECTION_VALUE_INCREMENT;
+                            break;
+                        case SWITCH_VALID_CHANNELS:
+                            thruPrefix = cliData.command[i];
+                            secActiveChannels[cliData.command[i]] = true;
+                            cmdStatus = CLI_COMMAND_SECTION_CHANNEL;
+                            break;
+                        case Thru:
+                            thruPrefix = 1;
+                            secActiveChannels[cliData.command[i]] = true;
+                            cmdStatus = CLI_COMMAND_SECTION_CHANNEL_THRU;
+                            break;
+                        case At:
+                            useTXActiveChannels = true;
+                            cmdStatus = CLI_COMMAND_SECTION_VALUE;
+                            break;
+                        case Full:
+                            useTXActiveChannels = true;
+                            lowVal = 100;
+                            highVal = 100;
+                            cmdStatus = CLI_COMMAND_SECTION_COMPLETE;
+                            break;
+                        case Enter:
+                            cmdStatus = CLI_COMMAND_COMPLETE;
+                            break;
+                        default:
+                            cmdStatus = CLI_COMMAND_SECTION_ERROR;
+                            break;
+                            
+                    }
+                    break;
+                case CLI_COMMAND_SECTION_CHANNEL:
+                    switch(cliData.command[i])
+                    {
+                        case Offset:
+                            cmdStatus = CLI_COMMAND_SECTION_OFFSET;
+                            break;
+                        case Minus:
+                            cmdStatus = CLI_COMMAND_SECTION_CHANNEL_REMOVE;
+                            break;
+                        case Plus:
+                            cmdStatus = CLI_COMMAND_SECTION_CHANNEL_ADD;
+                            break;
+                        case Thru:
+                            cmdStatus = CLI_COMMAND_SECTION_CHANNEL_THRU;
+                            break;
+                        case At:
+                            cmdStatus = CLI_COMMAND_SECTION_VALUE;
+                            break;
+                        case Full:
+                            lowVal = 100;
+                            highVal = 100;
+                            cmdStatus = CLI_COMMAND_SECTION_COMPLETE;
+                            break;
+                        default:
+                            cmdStatus = CLI_COMMAND_SECTION_ERROR;
+                            break;
+                    }
+                    break;
+                case CLI_COMMAND_SECTION_CHANNEL_ADD:
+                    if(cliData.command[i] > 0 && cliData.command[i] < 513)
+                    {
+                        thruPrefix = cliData.command[i];
+                        secActiveChannels[cliData.command[i]] = true;
+                        cmdStatus = CLI_COMMAND_SECTION_CHANNEL;
+                    }
+                    else
+                        cmdStatus = CLI_COMMAND_SECTION_ERROR;
+                    break;
+                case CLI_COMMAND_SECTION_CHANNEL_REMOVE:
+                    if(cliData.command[i] > 0 && cliData.command[i] < 513)
+                    {
+                        thruPrefix = cliData.command[i] * -1;
+                        secActiveChannels[cliData.command[i]] = false;
+                        cmdStatus = CLI_COMMAND_SECTION_CHANNEL;
+                    }
+                    else
+                        cmdStatus = CLI_COMMAND_SECTION_ERROR;
+                    break;
+                case CLI_COMMAND_SECTION_CHANNEL_THRU:
+                    if(thruPrefix == CLI_COMMAND_START)
+                        cmdStatus = CLI_COMMAND_SECTION_ERROR;
+                    else
+                    {
+                        switch(cliData.command[i])
+                        {
+                            case Offset:
+                                for(j = thruPrefix; j <= 512; j++)
+                                {
+                                    secActiveChannels[j] = true;
+                                }
+                                cmdStatus = CLI_COMMAND_SECTION_OFFSET;
+                                break;
+                            case SWITCH_VALID_CHANNELS:
+                                if(thruPrefix > cliData.command[i])
+                                    for(j = cliData.command[i]; j <= thruPrefix; j++)
+                                    {
+                                        secActiveChannels[j] = true;
+                                    }
+                                else
+                                    for(j = thruPrefix; j <= cliData.command[i]; j++)
+                                    {
+                                        secActiveChannels[j] = true;
+                                    }
+                                cmdStatus = CLI_COMMAND_SECTION_CHANNEL;
+                                break;
+                            case At:
+                                for(j = thruPrefix; j <= 512; j++)
+                                {
+                                    secActiveChannels[j] = true;
+                                }
+                                cmdStatus = CLI_COMMAND_SECTION_VALUE;
+                                break;
+                            case Full:
+                                for(j = thruPrefix; j <= 512; j++)
+                                {
+                                    secActiveChannels[j] = true;
+                                }
+                                lowVal = 100;
+                                highVal = 100;
+                                cmdStatus = CLI_COMMAND_COMPLETE;
+                                break;
+                            default:
+                                cmdStatus = CLI_COMMAND_SECTION_ERROR;
+                                break;
+                        }
+                    }
+                    break;
+                case CLI_COMMAND_SECTION_OFFSET:
+                    switch(cliData.command[i])
+                    {
+                        case SWITCH_VALID_CHANNELS:
+                            offset = cliData.command[i];
+                            cmdStatus = CLI_COMMAND_SECTION_OFFSET_ENTERED;
+                            break;
+                        default:
+                            cmdStatus = CLI_COMMAND_SECTION_ERROR;
+                            break;
+                    }
+                    break;
+                case CLI_COMMAND_SECTION_OFFSET_ENTERED:
+                    cmdStatus = CLI_COMMAND_SECTION_ERROR;
+                    switch(cliData.command[i])
+                    {
+                        case At:
+                            cmdStatus = CLI_COMMAND_SECTION_VALUE;
+                            break;
+                        case Full:
+                            lowVal = 100;
+                            highVal = 100;
+                            cmdStatus = CLI_COMMAND_SECTION_COMPLETE;
+                            break;
+                        default:
+                            cmdStatus = CLI_COMMAND_SECTION_ERROR;
+                            break;
+                            
+                    }
+                    break;
+                case CLI_COMMAND_SECTION_VALUE:
+                    switch(cliData.command[i])
+                    {
+                        case SWITCH_VALID_PERCENT_VALUES:
+                            lowVal = highVal = cliData.command[i];
+                            cmdStatus = CLI_COMMAND_SECTION_VALUE_ENTERED;
+                            break;
+                        case Minus:
+                            cmdStatus = CLI_COMMAND_SECTION_VALUE_DECREMENT;
+                            break;
+                        case Plus:
+                            cmdStatus = CLI_COMMAND_SECTION_VALUE_INCREMENT;
+                            break;
+                        case Thru:
+                            //LowVal will already be set
+                            cmdStatus = CLI_COMMAND_SECTION_VALUE_THRU;
+                            break;
+                        case Full:
+                            lowVal = 100;
+                            highVal = 100;
+                            cmdStatus = CLI_COMMAND_SECTION_COMPLETE;
+                            break;
+                        default:
+                            cmdStatus = CLI_COMMAND_SECTION_ERROR;
+                            break;                            
+                    }
+                    break;
+                case CLI_COMMAND_SECTION_VALUE_ENTERED:
+                    switch(cliData.command[i])
+                    {
+                        case Time:
+                            cmdStatus = CLI_COMMAND_SECTION_TIME;
+                            break;
+                        case Plus:
+                            cmdStatus = CLI_COMMAND_SECTION_COMPLETE;
+                            break;
+                        case Thru:
+                            //LowVal will already be set
+                            cmdStatus = CLI_COMMAND_SECTION_VALUE_THRU;
+                            break;
+                        case Enter:
+                            cmdStatus = CLI_COMMAND_COMPLETE;
+                            break;
+                        default:
+                            cmdStatus = CLI_COMMAND_SECTION_ERROR;
+                            break;                            
+                    }
+                    break;
+                case CLI_COMMAND_SECTION_VALUE_INCREMENT:
+                    cmdStatus = CLI_COMMAND_SECTION_ERROR;                    
+                    switch(cliData.command[i])
+                    {
+                        case SWITCH_VALID_PERCENT_VALUES:
+                            valIncDec = cliData.command[i];
+                            cmdStatus = CLI_COMMAND_SECTION_VALUE_INCREMENT_ENTERED;
+                            break;
+                        default:
+                            cmdStatus = CLI_COMMAND_SECTION_ERROR;
+                            break;   
+                    }
+                    break;
+                case CLI_COMMAND_SECTION_VALUE_INCREMENT_ENTERED:
+                    cmdStatus = CLI_COMMAND_SECTION_ERROR;                    
+                    switch(cliData.command[i])
+                    {
+                        case Plus:
+                            cmdStatus = CLI_COMMAND_SECTION_COMPLETE;
+                            break;
+                        case Enter:
+                            cmdStatus = CLI_COMMAND_COMPLETE;
+                            break;
+                        default:
+                            cmdStatus = CLI_COMMAND_SECTION_ERROR;
+                            break;   
+                    }
+                    break;
+                case CLI_COMMAND_SECTION_VALUE_DECREMENT:
+                    cmdStatus = CLI_COMMAND_SECTION_ERROR;                    
+                    switch(cliData.command[i])
+                    {
+                        case SWITCH_VALID_PERCENT_VALUES:
+                            valIncDec = cliData.command[i] * -1;
+                            cmdStatus = CLI_COMMAND_SECTION_VALUE_DECREMENT_ENTERED;
+                            break;
+                        default:
+                            cmdStatus = CLI_COMMAND_SECTION_ERROR;
+                            break;   
+                    }
+                    break;
+                case CLI_COMMAND_SECTION_VALUE_DECREMENT_ENTERED:
+                    cmdStatus = CLI_COMMAND_SECTION_ERROR;                    
+                    switch(cliData.command[i])
+                    {
+                        case Plus:
+                            cmdStatus = CLI_COMMAND_SECTION_COMPLETE;
+                            break;
+                        case Enter:
+                            cmdStatus = CLI_COMMAND_COMPLETE;
+                            break;
+                        default:
+                            cmdStatus = CLI_COMMAND_SECTION_ERROR;
+                            break;   
+                    }
+                    break;
+                case CLI_COMMAND_SECTION_VALUE_THRU:
+                    switch(cliData.command[i])
+                    {
+                        case Time:
+                            highVal = 100;
+                            cmdStatus = CLI_COMMAND_SECTION_TIME;
+                            break;
+                        case Plus:
+                            highVal = 100;
+                            cmdStatus = CLI_COMMAND_SECTION_COMPLETE;
+                            break;
+                        case SWITCH_VALID_PERCENT_VALUES:
+                            if(cliData.command[i] > lowVal)
+                                highVal = cliData.command[i];
+                            else
+                                lowVal = cliData.command[i];
+                            cmdStatus = CLI_COMMAND_SECTION_VALUE_THRU_ENTERED;
+                            break;
+                        case Full:
+                        case Enter:
+                            highVal = 100;
+                            cmdStatus = CLI_COMMAND_COMPLETE;
+                            break;
+                        default:
+                            cmdStatus = CLI_COMMAND_SECTION_ERROR;
+                            break;
+                    }
+                    break;
+                case CLI_COMMAND_SECTION_VALUE_THRU_ENTERED:
+                    switch(cliData.command[i])
+                    {
+                        case Time:
+                            cmdStatus = CLI_COMMAND_SECTION_TIME;
+                            break;
+                        case Plus:
+                            cmdStatus = CLI_COMMAND_SECTION_COMPLETE;
+                            break;
+                        case Enter:
+                            cmdStatus = CLI_COMMAND_COMPLETE;
+                            break;
+                        default:
+                            cmdStatus = CLI_COMMAND_SECTION_ERROR;
+                            break;
+                    }
+                    break;
+                case CLI_COMMAND_SECTION_TIME:
+                case CLI_COMMAND_SECTION_TIME_ENTERED:
+                case CLI_COMMAND_SECTION_RECORD:
+                case CLI_COMMAND_SECTION_RECORD_ENTERED:
+                case CLI_COMMAND_SECTION_PLAYBACK:
+                case CLI_COMMAND_SECTION_PLAYBACK_ENTERED:
+                    cmdStatus = CLI_COMMAND_SECTION_COMPLETE;
+                    //Implement these
+                    break;
+                case CLI_COMMAND_SECTION_COMPLETE:
+                case CLI_COMMAND_COMPLETE:
+                case CLI_COMMAND_SECTION_ERROR:
+                    //All of this is done after the switch
+                    break;    
+            }
+            
+            if(cmdStatus == CLI_COMMAND_SECTION_COMPLETE || cmdStatus == CLI_COMMAND_COMPLETE)
+            {
+                uint16_t k = 0, secActiveChannelCount = 0, fanAmount;
+                if((lowVal || highVal) && valIncDec)    //Setting literal values AND Inc/Decrementing
+                    cmdStatus = CLI_COMMAND_SECTION_ERROR;
+                else
+                {
+                    if(useTXActiveChannels)
+                    {
+                        for(j = 1; j < 513; j++)
+                        {
+                            if(*(cliData.values + j))
+                            {
+                                secActiveChannels[j] = true;
+                                if(!activeChannels[j])
+                                    chVals[j] = *(cliData.values + j);
+                            }
+                        }
+                    }
+                    for(j = 1; j < 513; j++)
+                    {
+                        if(secActiveChannels[j])
+                        {
+                            //deal with offset and shift
+                            activeChannels[j] = true;
+                            secActiveChannelCount++;
+                        }
+                    }
+                    if(valIncDec == 0)
+                    {
+                        if(secActiveChannelCount == 1 || secActiveChannelCount == 0)
+                            fanAmount = 0;
+                        else
+                        {
+                            fanAmount = ((highVal - lowVal) * 100) / ((secActiveChannelCount - 1) * 100);
+                        }
+                        for(j = 0; j < 513; j++)
+                        {
+                            if(secActiveChannels[j])
+                            {
+                                chVals[j] = lowVal + ((fanAmount * k) / 100);
+                                k++;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        for(j = 0; j < 513; j++)
+                        {
+                            if(secActiveChannels[j])
+                            {
+                                if(chVals[j] < valIncDec)
+                                    chVals[j] = 0;
+                                chVals[j] = chVals[j] + valIncDec;
+                                if(chVals[j] > 100)
+                                    chVals[j] = 100;
+                            }
+                        }
+                    }
+                }
+                if(offset || offsetShift || time || presetNum); 
+                //Currently unused variables, need to be acted upon
+            }
+            if(cmdStatus == CLI_COMMAND_COMPLETE || 
+                    cmdStatus == CLI_COMMAND_SECTION_ERROR)
+                break;
+        }
+        
+        
+        
+        if(cmdStatus == CLI_COMMAND_SECTION_ERROR)
+            return false;
+        
+        if(cmdStatus == CLI_COMMAND_COMPLETE)
+        {
+            for(j = 1; j < 513; j++)
+            {
+                if(activeChannels[j])
+                    *(cliData.values + j) = chVals[j] * 2.55;
+            }
+        }
+        return true;
+    }
+    
+    char* CLI_FunctionToString(uint16_t function, char* str)
+    {
+        switch(function)
+        {
+            case Thru:
+                strcpy(str, "Thru");
+                break;
+            case At:
+                strcpy(str, "At");
+                break;
+            case Full:
+                strcpy(str, "Full *");
+                break;
+            case Enter:
+                strcpy(str, "*");
+                break;
+            case Bksp:
+                strcpy(str, "Bksp");
+                break;
+            case Clear:
+                strcpy(str, "Clear");
+                break;
+            case Plus:
+                strcpy(str, "Plus");
+                break;
+            case Minus:
+                strcpy(str, "Minus");
+                break;
+            case Last:
+                strcpy(str, "Last");
+                break;
+            case Next:
+                strcpy(str, "Next");
+                break;
+            case Record:
+                strcpy(str, "Record");
+                break;
+            case Preset:
+                strcpy(str, "Preset");
+                break;
+            case Offset:
+                strcpy(str, "Offset");
+                break;
+            case Time:
+                strcpy(str, "Time");
+                break;
+            default:
+                itoa(str, function, 10);
+                break;
+        }
+        return str;
+    }
+    
+    void CLI_PrintCommand()
+    {
+        char string[64] = "";
+        uint8_t i, j;
+        for(i = 0; i < cliData.counter; i++)
+        {
+            CLI_FunctionToString(cliData.command[i], string + strlen(string));
+            j = strlen(string);
+            string[j] = ' ';
+            string[j + 1] = '\0';
+        }
+        OLED_Blank();
+        OLED_String(string, strlen(string), 0, 1);
+        OLED_DrawScreen();
+    }
+    
+    void CLI_PrintError (uint16_t function)
+    {
+        OLED_ClearLine(3);
+        char string[15] = "Invalid Key: \"";
+        OLED_String(string, 14, 0, 3);
+        CLI_FunctionToString(function, string);
+        OLED_String(string, strlen(string), 84, 3);
+        OLED_String("\"", 1, 84 + (strlen(string) * 6), 3);        
+        OLED_DrawScreen();
+    }
+    
     
 
 
@@ -279,7 +740,7 @@ void CLI_AddItem(uint16_t function)
   @Remarks
     Refer to the example_file.h interface header for function usage details.
  */
-void CLI_Init(uint8_t* dmxBuf)
+    void CLI_Init(uint8_t* dmxBuf)
     {
         for(cliData.counter = 0; cliData.counter < 5; cliData.counter++)
             cliData.command[cliData.counter] = 0;
@@ -291,127 +752,48 @@ void CLI_Init(uint8_t* dmxBuf)
     
     void CLI_AddToCommand(uint16_t function)
     {
-        bool accepted = false;
-        switch(function)
+        if(function == Clear)
         {
-            case 0 ... 9:
-                if(cliData.counter == 0)
-                {
-                    if(CLI_AddNumeric(function, true))
-                        accepted = true;
-                }
-                else if(cliData.command[cliData.counter - 1] == At)
-                {
-                    if(CLI_AddNumeric(function, false))
-                        accepted = true;
-                }
+            CLI_Clear();
+            CLI_PrintCommand();
+        }
+        else if(function == Bksp)
+        {
+            CLI_RemoveLastItem();
+            CLI_PrintCommand();
+        }
+        else if(function == Full || function == Enter)
+        {
+            CLI_AddItem(function);
+            if(CLI_ProcessCommand())
+            {
+                CLI_PrintCommand();
+            }
+            else
+                CLI_PrintError(function);
+            cliData.counter = 0;
+            cliData.command[0] = 0;
+        }
+        else if(function == Last || function == Next)
+        {
+            //Add the last and next functions
+        }
+        else
+        {
+            if(cliData.counter != CLI_MAX_ITEMS)
+            {
+                CLI_AddItem(function);
+                if(CLI_ProcessCommand())
+                    CLI_PrintCommand();
                 else
                 {
-                    if(CLI_AddNumeric(function, true))
-                        accepted = true;
+                    CLI_RemoveLastItem();
+                    CLI_PrintError(function);
                 }
-            //"Thru" must be first or follow a channel 
-            case Thru:
-                if(cliData.counter == 0)
-                {
-                    CLI_AddItem(1);
-                    CLI_AddItem(Thru);
-                    accepted = true;
-                }
-                else if(cliData.command[cliData.counter - 1] >= 1 &&
-                        cliData.command[cliData.counter - 1] <= 512)
-                {
-                    CLI_AddItem(Thru);
-                    accepted = true;
-                }
-                break;
-            //"At" must be first or follow a channel or "Thru"
-            case At:
-                if(cliData.counter == 0)
-                {
-                    CLI_AddItem(cliData.chLow);
-                    CLI_AddItem(Thru);
-                    CLI_AddItem(cliData.chHigh);
-                    CLI_AddItem(At);
-                    accepted = true;
-                }
-                else if(cliData.command[cliData.counter - 1] == Thru)
-                {
-                    CLI_AddItem(512);
-                    CLI_AddItem(At);
-                    accepted = true;
-                }
-                else if(cliData.command[cliData.counter - 1] >= 1 &&
-                        cliData.command[cliData.counter - 1] <= 512)
-                {
-                    CLI_AddItem(At);
-                    accepted = true;
-                }
-                break;
-            //"Full" must follow "At", a channel, or "Thru"
-            case Full:
-                if(cliData.command[cliData.counter - 1] == Thru)
-                {
-                    CLI_AddItem(512);
-                    CLI_AddItem(At);
-                    CLI_AddItem(Full);
-                    accepted = true;
-                }
-                else if(cliData.command[cliData.counter - 1] == At)
-                {
-                    CLI_AddItem(Full);
-                    accepted = true;
-                }
-                else if(cliData.command[cliData.counter - 1] >= 1 &&
-                        cliData.command[cliData.counter - 1] <= 512)
-                {
-                    CLI_AddItem(At);
-                    CLI_AddItem(Full);
-                    accepted = true;
-                }
-                break;
-            //Enter is always accepted
-            case Enter:
-                accepted = true;
-                break;
-            case Clear:
-                for(cliData.counter = 0; cliData.counter < 5; cliData.counter++)
-                    cliData.command[cliData.counter] = 0;
-                cliData.counter = 0;
-                accepted = true;
-                break;
-            case Bksp:
-                if(cliData.command[cliData.counter - 1] <= 512)
-                    CLI_RemoveNumeric();
-                else CLI_RemoveItem();
-            //Anything else is rejected
-            default:
-                break;
-        }
-        if(accepted)
-        {
-            switch(function)
-            {
-                case Full:
-                    cliData.command[cliData.counter] = function;
-                    cliData.counter++;
-                case Enter:
-                    CLI_ProcessCommand(false);
-                    break;
-                case Bksp:
-                case Clear:
-                    CLI_PrintCommand(false);
-                    break;
-                default:
-                    if(cliData.counter == 5) accepted = false;
-                    else
-                    {
-                        CLI_PrintCommand(false);
-                    }
-                    break;
             }
+            else
+                CLI_PrintError(function);
         }
-        else CLI_PrintError(function);
     }
 
     
