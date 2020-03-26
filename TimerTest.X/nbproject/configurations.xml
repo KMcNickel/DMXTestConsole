@@ -56,6 +56,8 @@
       <itemPath>../src/cli.h</itemPath>
       <itemPath>../src/oled.h</itemPath>
       <itemPath>../src/font_table.h</itemPath>
+      <itemPath>../src/dmx.h</itemPath>
+      <itemPath>../src/keypad.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -106,6 +108,8 @@
       </logicalFolder>
       <itemPath>../src/cli.c</itemPath>
       <itemPath>../src/oled.c</itemPath>
+      <itemPath>../src/dmx.c</itemPath>
+      <itemPath>../src/keypad.c</itemPath>
       <itemPath>../src/main.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
@@ -190,12 +194,12 @@
         <property key="enable-unroll-loops" value="false"/>
         <property key="exclude-floating-point" value="false"/>
         <property key="extra-include-directories"
-                  value="../src;../src/config/default;../src/packs/PIC32MZ2048EFM100_DFP;../src/mips"/>
+                  value="../src;../src/config/default;../src/packs/PIC32MZ2048EFM100_DFP;;../src/mips"/>
         <property key="generate-16-bit-code" value="false"/>
         <property key="generate-micro-compressed-code" value="false"/>
         <property key="isolate-each-function" value="true"/>
         <property key="make-warnings-into-errors" value="true"/>
-        <property key="optimization-level" value=""/>
+        <property key="optimization-level" value="-O1"/>
         <property key="place-data-into-section" value="true"/>
         <property key="post-instruction-scheduling" value="default"/>
         <property key="pre-instruction-scheduling" value="default"/>

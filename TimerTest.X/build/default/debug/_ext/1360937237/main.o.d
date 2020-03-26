@@ -20,4 +20,6 @@ build/default/debug/_ext/1360937237/main.o:  \
  ../src/config/default/peripheral/spi/plib_spi_common.h  \
 ../src/main.h  \
  ../src/cli.h  \
-../src/oled.h 
+../src/oled.h  \
+../src/dmx.h  \
+../src/keypad.h 

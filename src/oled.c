@@ -58,6 +58,22 @@
     Any additional remarks
  */
 
+enum OLED_States 
+{
+    OLED_STATE_Idle,
+    OLED_STATE_InitList,
+    OLED_STATE_DrawScreen,
+    OLED_STATE_DispOn,
+    OLED_STATE_Waiting
+};
+
+enum OLED_DrawStates
+{
+    OLED_STATE_DrawIdle,
+    OLED_STATE_SetParams,
+    OLED_STATE_Data
+};
+
 #define OLED_PixelCount 128*4
 uint8_t OLED_Buffer[OLED_PixelCount];
 enum OLED_States OLED_Sys_State;
@@ -350,6 +366,11 @@ void OLED_I2C_Callback(uintptr_t context)
 
 void OLED_Init()
 {
+    OLED_RST_Clear();
+    uint16_t i;
+    for(i = 0; i != 65535; i++);
+    OLED_RST_Set();
+    
     OLED_Sys_State = OLED_STATE_InitList;
     I2C2_CallbackRegister(OLED_I2C_Callback, (uintptr_t) NULL);
     

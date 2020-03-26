@@ -15,8 +15,8 @@
  */
 /* ************************************************************************** */
 
-#ifndef _EXAMPLE_FILE_NAME_H    /* Guard against multiple inclusion */
-#define _EXAMPLE_FILE_NAME_H
+#ifndef _MAIN_H    /* Guard against multiple inclusion */
+#define _MAIN_H
 
 
 /* ************************************************************************** */
@@ -37,13 +37,7 @@ extern "C" {
 #endif
 
 
-    enum DMXFrameStep {
-        BREAK,
-        MAB,
-        CHANNELS,
-        DMACOMPLETE,
-        MBB
-    };
+
     
     
 

@@ -99,8 +99,8 @@
           <Name dnOrder="1">plib_tmr2.c</Name>
           <LogicalPath dnOrder="2">config/default/peripheral/tmr/</LogicalPath>
           <PhysicalPath dnOrder="3">/peripheral/tmr/</PhysicalPath>
-          <GeneratedChecksum dnOrder="4">09E9E1357A64D1C79EE3686A4C2CE846</GeneratedChecksum>
-          <UserChecksum dnOrder="5">09E9E1357A64D1C79EE3686A4C2CE846</UserChecksum>
+          <GeneratedChecksum dnOrder="4">3FED1D087E144351117CC30E7FD5F307</GeneratedChecksum>
+          <UserChecksum dnOrder="5">3FED1D087E144351117CC30E7FD5F307</UserChecksum>
         </File>
         <File dnOrder="12">
           <Type dnOrder="0">SOURCE</Type>

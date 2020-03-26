@@ -120,41 +120,7 @@ extern "C" {
         element or member.
      */
     
-    enum CommandSectionCompleteStatus
-    {
-        CLI_COMMAND_SECTION_NEW,
-        CLI_COMMAND_SECTION_CHANNEL,
-        CLI_COMMAND_SECTION_CHANNEL_ADD,
-        CLI_COMMAND_SECTION_CHANNEL_REMOVE,
-        CLI_COMMAND_SECTION_CHANNEL_THRU,
-        CLI_COMMAND_SECTION_OFFSET,
-        CLI_COMMAND_SECTION_OFFSET_ENTERED,
-        CLI_COMMAND_SECTION_VALUE,
-        CLI_COMMAND_SECTION_VALUE_ENTERED,
-        CLI_COMMAND_SECTION_VALUE_INCREMENT,
-        CLI_COMMAND_SECTION_VALUE_INCREMENT_ENTERED,
-        CLI_COMMAND_SECTION_VALUE_DECREMENT,
-        CLI_COMMAND_SECTION_VALUE_DECREMENT_ENTERED,
-        CLI_COMMAND_SECTION_VALUE_THRU,
-        CLI_COMMAND_SECTION_VALUE_THRU_ENTERED,
-        CLI_COMMAND_SECTION_TIME,
-        CLI_COMMAND_SECTION_TIME_ENTERED,
-        CLI_COMMAND_SECTION_RECORD,
-        CLI_COMMAND_SECTION_RECORD_ENTERED,
-        CLI_COMMAND_SECTION_PLAYBACK,
-        CLI_COMMAND_SECTION_PLAYBACK_ENTERED,
-        CLI_COMMAND_SECTION_COMPLETE,
-        CLI_COMMAND_COMPLETE,
-        CLI_COMMAND_SECTION_ERROR
-    };
-    
-    struct CLI_Data {
-        uint16_t command[CLI_MAX_ITEMS];
-        uint8_t counter;
-        uint16_t chLow;
-        uint16_t chHigh;
-        uint8_t* values;
-    };
+
 
 
     // *****************************************************************************
