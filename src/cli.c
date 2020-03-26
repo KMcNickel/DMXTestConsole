@@ -39,6 +39,42 @@
 /* ************************************************************************** */
 /* ************************************************************************** */
 
+enum CommandSectionCompleteStatus
+{
+    CLI_COMMAND_SECTION_NEW,
+    CLI_COMMAND_SECTION_CHANNEL,
+    CLI_COMMAND_SECTION_CHANNEL_ADD,
+    CLI_COMMAND_SECTION_CHANNEL_REMOVE,
+    CLI_COMMAND_SECTION_CHANNEL_THRU,
+    CLI_COMMAND_SECTION_OFFSET,
+    CLI_COMMAND_SECTION_OFFSET_ENTERED,
+    CLI_COMMAND_SECTION_VALUE,
+    CLI_COMMAND_SECTION_VALUE_ENTERED,
+    CLI_COMMAND_SECTION_VALUE_INCREMENT,
+    CLI_COMMAND_SECTION_VALUE_INCREMENT_ENTERED,
+    CLI_COMMAND_SECTION_VALUE_DECREMENT,
+    CLI_COMMAND_SECTION_VALUE_DECREMENT_ENTERED,
+    CLI_COMMAND_SECTION_VALUE_THRU,
+    CLI_COMMAND_SECTION_VALUE_THRU_ENTERED,
+    CLI_COMMAND_SECTION_TIME,
+    CLI_COMMAND_SECTION_TIME_ENTERED,
+    CLI_COMMAND_SECTION_RECORD,
+    CLI_COMMAND_SECTION_RECORD_ENTERED,
+    CLI_COMMAND_SECTION_PLAYBACK,
+    CLI_COMMAND_SECTION_PLAYBACK_ENTERED,
+    CLI_COMMAND_SECTION_COMPLETE,
+    CLI_COMMAND_COMPLETE,
+    CLI_COMMAND_SECTION_ERROR
+};
+
+struct CLI_Data {
+    uint16_t command[CLI_MAX_ITEMS];
+    uint8_t counter;
+    uint16_t chLow;
+    uint16_t chHigh;
+    uint8_t* values;
+};
+
 struct CLI_Data cliData;
 //uint16_t concat[CLI_MAX_ITEMS];
 //struct CommandSectionData csData[CLI_MAX_ITEMS];
@@ -116,7 +152,8 @@ struct CLI_Data cliData;
         {
             cliData.command[cliData.counter - 1] = 
                     cliData.command[cliData.counter - 1] / 10;
-            cliData.counter--;
+            if(cliData.command[cliData.counter - 1] == 0)
+                cliData.counter--;
         }
     }
     
@@ -135,14 +172,14 @@ struct CLI_Data cliData;
         bool activeChannels[513];
         uint8_t chVals[513];
         bool useTXActiveChannels = false;
-        int16_t thruPrefix;
-        uint8_t lowVal;
-        uint8_t highVal;
-        int16_t valIncDec;
-        uint16_t offset;
-        uint16_t offsetShift;
-        uint8_t time;
-        uint8_t presetNum;
+        int16_t thruPrefix = CLI_COMMAND_START;
+        uint8_t lowVal = 0;
+        uint8_t highVal = 0;
+        int16_t valIncDec = 0;
+        uint16_t offset = 0;
+        uint16_t offsetShift = 0;
+        uint8_t time = 0;
+        uint8_t presetNum = 0;
         enum CommandSectionCompleteStatus cmdStatus = CLI_COMMAND_SECTION_NEW;
         
         for(i = 0; i < cliData.counter; i++)
@@ -198,9 +235,9 @@ struct CLI_Data cliData;
                             break;
                         case Full:
                             useTXActiveChannels = true;
-                            lowVal = 100;
-                            highVal = 100;
-                            cmdStatus = CLI_COMMAND_SECTION_COMPLETE;
+                            lowVal = 255;
+                            highVal = 255;
+                            cmdStatus = CLI_COMMAND_COMPLETE;
                             break;
                         case Enter:
                             cmdStatus = CLI_COMMAND_COMPLETE;
@@ -230,9 +267,9 @@ struct CLI_Data cliData;
                             cmdStatus = CLI_COMMAND_SECTION_VALUE;
                             break;
                         case Full:
-                            lowVal = 100;
-                            highVal = 100;
-                            cmdStatus = CLI_COMMAND_SECTION_COMPLETE;
+                            lowVal = 255;
+                            highVal = 255;
+                            cmdStatus = CLI_COMMAND_COMPLETE;
                             break;
                         default:
                             cmdStatus = CLI_COMMAND_SECTION_ERROR;
@@ -298,8 +335,8 @@ struct CLI_Data cliData;
                                 {
                                     secActiveChannels[j] = true;
                                 }
-                                lowVal = 100;
-                                highVal = 100;
+                                lowVal = 255;
+                                highVal = 255;
                                 cmdStatus = CLI_COMMAND_COMPLETE;
                                 break;
                             default:
@@ -328,9 +365,9 @@ struct CLI_Data cliData;
                             cmdStatus = CLI_COMMAND_SECTION_VALUE;
                             break;
                         case Full:
-                            lowVal = 100;
-                            highVal = 100;
-                            cmdStatus = CLI_COMMAND_SECTION_COMPLETE;
+                            lowVal = 255;
+                            highVal = 255;
+                            cmdStatus = CLI_COMMAND_COMPLETE;
                             break;
                         default:
                             cmdStatus = CLI_COMMAND_SECTION_ERROR;
@@ -342,7 +379,7 @@ struct CLI_Data cliData;
                     switch(cliData.command[i])
                     {
                         case SWITCH_VALID_PERCENT_VALUES:
-                            lowVal = highVal = cliData.command[i];
+                            lowVal = highVal = cliData.command[i] * 2.55;
                             cmdStatus = CLI_COMMAND_SECTION_VALUE_ENTERED;
                             break;
                         case Minus:
@@ -356,9 +393,9 @@ struct CLI_Data cliData;
                             cmdStatus = CLI_COMMAND_SECTION_VALUE_THRU;
                             break;
                         case Full:
-                            lowVal = 100;
-                            highVal = 100;
-                            cmdStatus = CLI_COMMAND_SECTION_COMPLETE;
+                            lowVal = 255;
+                            highVal = 255;
+                            cmdStatus = CLI_COMMAND_COMPLETE;
                             break;
                         default:
                             cmdStatus = CLI_COMMAND_SECTION_ERROR;
@@ -391,7 +428,7 @@ struct CLI_Data cliData;
                     switch(cliData.command[i])
                     {
                         case SWITCH_VALID_PERCENT_VALUES:
-                            valIncDec = cliData.command[i];
+                            valIncDec = cliData.command[i] * 2.55;
                             cmdStatus = CLI_COMMAND_SECTION_VALUE_INCREMENT_ENTERED;
                             break;
                         default:
@@ -419,7 +456,7 @@ struct CLI_Data cliData;
                     switch(cliData.command[i])
                     {
                         case SWITCH_VALID_PERCENT_VALUES:
-                            valIncDec = cliData.command[i] * -1;
+                            valIncDec = cliData.command[i] * -2.55;
                             cmdStatus = CLI_COMMAND_SECTION_VALUE_DECREMENT_ENTERED;
                             break;
                         default:
@@ -446,23 +483,23 @@ struct CLI_Data cliData;
                     switch(cliData.command[i])
                     {
                         case Time:
-                            highVal = 100;
+                            highVal = 255;
                             cmdStatus = CLI_COMMAND_SECTION_TIME;
                             break;
                         case Plus:
-                            highVal = 100;
+                            highVal = 255;
                             cmdStatus = CLI_COMMAND_SECTION_COMPLETE;
                             break;
                         case SWITCH_VALID_PERCENT_VALUES:
                             if(cliData.command[i] > lowVal)
-                                highVal = cliData.command[i];
+                                highVal = cliData.command[i] * 2.55;
                             else
-                                lowVal = cliData.command[i];
+                                lowVal = cliData.command[i] * 2.55;
                             cmdStatus = CLI_COMMAND_SECTION_VALUE_THRU_ENTERED;
                             break;
                         case Full:
                         case Enter:
-                            highVal = 100;
+                            highVal = 255;
                             cmdStatus = CLI_COMMAND_COMPLETE;
                             break;
                         default:
@@ -505,7 +542,8 @@ struct CLI_Data cliData;
             
             if(cmdStatus == CLI_COMMAND_SECTION_COMPLETE || cmdStatus == CLI_COMMAND_COMPLETE)
             {
-                uint16_t k = 0, secActiveChannelCount = 0, fanAmount;
+                uint32_t fanAmount;
+                uint16_t k = 0, secActiveChannelCount = 0;
                 if((lowVal || highVal) && valIncDec)    //Setting literal values AND Inc/Decrementing
                     cmdStatus = CLI_COMMAND_SECTION_ERROR;
                 else
@@ -537,13 +575,13 @@ struct CLI_Data cliData;
                             fanAmount = 0;
                         else
                         {
-                            fanAmount = ((highVal - lowVal) * 100) / ((secActiveChannelCount - 1) * 100);
+                            fanAmount = ((highVal - lowVal) * 10000) / (secActiveChannelCount - 1);
                         }
                         for(j = 0; j < 513; j++)
                         {
                             if(secActiveChannels[j])
                             {
-                                chVals[j] = lowVal + ((fanAmount * k) / 100);
+                                chVals[j] = lowVal + ((fanAmount * k) / 10000);
                                 k++;
                             }
                         }
@@ -557,8 +595,6 @@ struct CLI_Data cliData;
                                 if(chVals[j] < valIncDec)
                                     chVals[j] = 0;
                                 chVals[j] = chVals[j] + valIncDec;
-                                if(chVals[j] > 100)
-                                    chVals[j] = 100;
                             }
                         }
                     }
@@ -581,7 +617,7 @@ struct CLI_Data cliData;
             for(j = 1; j < 513; j++)
             {
                 if(activeChannels[j])
-                    *(cliData.values + j) = chVals[j] * 2.55;
+                    *(cliData.values + j) = chVals[j];
             }
         }
         return true;
@@ -651,7 +687,9 @@ struct CLI_Data cliData;
             string[j] = ' ';
             string[j + 1] = '\0';
         }
-        OLED_Blank();
+        OLED_ClearLine(1);
+        OLED_ClearLine(2);
+        OLED_ClearLine(3);
         OLED_String(string, strlen(string), 0, 1);
         OLED_DrawScreen();
     }
