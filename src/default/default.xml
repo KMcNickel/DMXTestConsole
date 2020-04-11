@@ -1991,7 +1991,7 @@
       <ElementPositions dnOrder="0">
         <ElementPosition dnOrder="0" id="core" x="240" y="20"/>
         <ElementPosition dnOrder="1" id="dfp" x="20" y="20"/>
-        <ElementPosition dnOrder="2" id="i2c2" x="502" y="116"/>
+        <ElementPosition dnOrder="2" id="i2c2" x="501" y="117"/>
         <ElementPosition dnOrder="3" id="spi2" x="342" y="115"/>
         <ElementPosition dnOrder="4" id="tmr1" x="342" y="18"/>
         <ElementPosition dnOrder="5" id="tmr2" x="820" y="20"/>
