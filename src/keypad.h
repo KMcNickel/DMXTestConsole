@@ -164,6 +164,7 @@ extern "C" {
 
 void Keypad_Init();
 void Keypad_ProcessButtonPress();
+void Keypad_SPICallback (uintptr_t context);
 
     /* Provide C++ Compatibility */
 #ifdef __cplusplus

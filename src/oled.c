@@ -28,6 +28,7 @@
 #include "main.h"
 #include "oled.h"
 #include "font_table.h"
+#include "UI.h"
 
 
 /* ************************************************************************** */
@@ -79,8 +80,7 @@ uint8_t OLED_Buffer[OLED_PixelCount];
 enum OLED_States OLED_Sys_State;
 enum OLED_DrawStates OLED_Draw_State;
 bool initialized;
-uint8_t page, column;
-uint16_t curByte;
+uint8_t page;
 
 /* ************************************************************************** */
 /* ************************************************************************** */
@@ -163,25 +163,36 @@ uint16_t curByte;
  */
 
 
-void OLED_I2C_Command_Write(uint8_t cmd)
+
+
+void OLED_CommandArray_Write(uint8_t * cmd, uint16_t size)
 {
-    uint8_t data[] = { 0x00, cmd };
-    I2C2_Write(SSD1305_ADDRESS, data, 2);
-}
-void OLED_I2C_CommandList_Write(uint8_t* cmd, uint16_t size)
-{
-    I2C2_Write(SSD1305_ADDRESS, cmd, size);
+    while(!UI_SetActiveDevice(UI_DEVICE_OLED));
+    OLED_DC_Clear();
+    OLED_CS_Clear();
+    SPI2_Write(&cmd, size);
 }
 
-void OLED_I2C_Data_Write(uint8_t cmd)
+void OLED_Command_Write(uint8_t cmd, uint16_t size)
 {
-    uint8_t data[] = { 0x40, cmd };
-    I2C2_Write(SSD1305_ADDRESS, data, 2);
+    OLED_CommandArray_Write(&cmd, size);
+}
+
+void OLED_DataArray_Write(uint8_t * data, uint16_t size)
+{
+    while(!UI_SetActiveDevice(UI_DEVICE_OLED));
+    OLED_DC_Set();
+    OLED_CS_Clear();
+    SPI2_Write(&data, size);
+}
+
+void OLED_Data_Write(uint8_t data, uint16_t size)
+{
+    OLED_DataArray_Write(&data, size);
 }
 
 uint8_t initList[] = 
 {
-    0x00,
     SSD1305_DISPLAYOFF,
     SSD1305_SETDISPLAYCLOCKDIV,
     0x10,
@@ -219,7 +230,6 @@ uint8_t initList[] =
 
 uint8_t drawList[] = 
 {
-    0x00,
     SSD1305_SETPAGESTART,
     SSD1305_SETLOWCOLUMN | 4,
     SSD1305_SETHIGHCOLUMN
@@ -300,28 +310,22 @@ bool OLED_UpdateScreen()
     switch(OLED_Draw_State)
     {
         case OLED_STATE_DrawIdle:
-            column = page = curByte = 0;
+            page = 0;
             OLED_Draw_State = OLED_STATE_SetParams;
         case OLED_STATE_SetParams:
             drawList[1] = SSD1305_SETPAGESTART | page;
-            OLED_I2C_CommandList_Write(drawList, sizeof(drawList));
+            OLED_CommandArray_Write(drawList, sizeof(drawList));
             OLED_Draw_State = OLED_STATE_Data;
             break;
         case OLED_STATE_Data:
-            OLED_I2C_Data_Write(OLED_Buffer[curByte]);
-            curByte++;
-            column++;
-            if(column == 128)
+            OLED_DataArray_Write(OLED_Buffer + (page * 128), 128);
+            page++;
+            if(page != 4)
+                OLED_Draw_State = OLED_STATE_SetParams;
+            else
             {
-                page++;
-                column = 0;
-                if(page != 4)
-                    OLED_Draw_State = OLED_STATE_SetParams;
-                else
-                {
-                    OLED_Draw_State = OLED_STATE_DrawIdle;
-                    return true;
-                }
+                OLED_Draw_State = OLED_STATE_DrawIdle;
+                return true;
             }
     }
     return false;
@@ -336,8 +340,9 @@ bool OLED_DrawScreen()
     return true;
 }
 
-void OLED_I2C_Callback(uintptr_t context)
+void OLED_SPICallback(uintptr_t context)
 {
+    OLED_CS_Set();
     switch(OLED_Sys_State)
     {
         case OLED_STATE_Idle:
@@ -355,7 +360,7 @@ void OLED_I2C_Callback(uintptr_t context)
             }
             break;
         case OLED_STATE_DispOn:
-            OLED_I2C_Command_Write(SSD1305_DISPLAYON);
+            OLED_Command_Write(SSD1305_DISPLAYON, 1);
             OLED_Sys_State = OLED_STATE_Waiting;
             break;
         case OLED_STATE_Waiting:
@@ -372,9 +377,8 @@ void OLED_Init()
     OLED_RST_Set();
     
     OLED_Sys_State = OLED_STATE_InitList;
-    I2C2_CallbackRegister(OLED_I2C_Callback, (uintptr_t) NULL);
     
-    OLED_I2C_CommandList_Write(initList, sizeof(initList));
+    OLED_CommandArray_Write(initList, sizeof(initList));
 }
 
 bool OLED_IsReady()

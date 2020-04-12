@@ -160,9 +160,12 @@ static void TMR2Callback (uint32_t status, uintptr_t context)
     SPI2_Read(&rawKeypadData, 2);
 }
 
-void SPI2Callback (uintptr_t context)
+void Keypad_SPICallback (uintptr_t context)
 {
     uint8_t i;
+
+    KEYPAD_PL_Clear();
+
     for(i = 0; i < 16; i++)
     {
         if(((rawKeypadData >> i) & 1) == 0 && 
@@ -184,7 +187,6 @@ void SPI2Callback (uintptr_t context)
         }
     }
     
-    KEYPAD_PL_Clear();
     TMR2_Start();
 }
 
@@ -239,7 +241,6 @@ void Keypad_ProcessButtonPress()
 void Keypad_Init()
 {
     TMR2_CallbackRegister(TMR2Callback, (uintptr_t)NULL);
-    SPI2_CallbackRegister(SPI2Callback, (uintptr_t)NULL);
     
     uint8_t i;
     for(i = 0; i < 16; i++)

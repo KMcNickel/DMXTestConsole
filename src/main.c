@@ -31,6 +31,7 @@
 #include "oled.h"
 #include "dmx.h"
 #include "keypad.h"
+#include "UI.h"
 
 // *****************************************************************************
 // *****************************************************************************
@@ -43,14 +44,12 @@ int main ( void )
     /* Initialize all modules */
     SYS_Initialize ( NULL );
     
-    Keypad_Init();
+    UI_Init();
     
     DMX_Init();
     
     CLI_Init(TXSrcAddr);
     
-    OLED_Init();
-
     while(!OLED_IsReady());
     OLED_String("System Running", 14, 0, 0);
     OLED_DrawScreen();

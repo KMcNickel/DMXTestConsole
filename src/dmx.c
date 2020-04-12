@@ -201,7 +201,6 @@ void DMAC0_Callback (DMAC_TRANSFER_EVENT event, uintptr_t contextHandle)
     {
         TXStep = BREAK;
         StartBreak();
-        LED1_Set();
         return;
     }
     TXStep = DMACOMPLETE;
@@ -214,7 +213,6 @@ void UART1_Callback()
     {
         TXStep = BREAK;
         StartBreak();
-        LED1_Set();
         return;
     }
     if(TXStep == DMACOMPLETE && (U1STA & _U1STA_TRMT_MASK)) 
@@ -225,55 +223,54 @@ void UART1_Callback()
     }
 }
 
-void TranslateAndFlipBuffers(uint16_t channels)
-{
-    int i;
-    //Translate Ch 512 to all channels
-    for(i = 1; i < channels; i++) ((uint8_t *)RXDestAddr)[i] = ((uint8_t *)RXDestAddr)[512];
-    void *BufA = RXDestAddr;       //Flip the buffers
-    RXDestAddr = TXSrcAddr;
-    TXSrcAddr = BufA;
-}
+//void TranslateAndFlipBuffers(uint16_t channels)
+//{
+//    int i;
+//    //Translate Ch 512 to all channels
+//    for(i = 1; i < channels; i++) ((uint8_t *)RXDestAddr)[i] = ((uint8_t *)RXDestAddr)[512];
+//    void *BufA = RXDestAddr;       //Flip the buffers
+//    RXDestAddr = TXSrcAddr;
+//    TXSrcAddr = BufA;
+//}
+//
+//void DMAC1_Callback (DMAC_TRANSFER_EVENT event, uintptr_t contextHandle)
+//{
+//    TranslateAndFlipBuffers(512);
+//}
+//
+//void UART2RXCallback()
+//{
+//    if(U2STA & _U2STA_FERR_MASK)
+//    {
+//        dummyData = (uint8_t)(U2RXREG);
+//        DMAC_ChannelTransfer(DMAC_CHANNEL_1, (void *) &U2RXREG, 1, (uint8_t *) RXDestAddr, 513, 1);
+//    }
+//
+//    /* Clear UART2 RX Interrupt flag after reading data buffer */
+//    IFS4CLR = _IFS4_U2RXIF_MASK;
+//}
 
-void DMAC1_Callback (DMAC_TRANSFER_EVENT event, uintptr_t contextHandle)
-{
-    //TranslateAndFlipBuffers(512);
-}
-
-void UART2RXCallback()
-{
-    if(U2STA & _U2STA_FERR_MASK)
-    {
-        dummyData = (uint8_t)(U2RXREG);
-        DMAC_ChannelTransfer(DMAC_CHANNEL_1, (void *) &U2RXREG, 1, (uint8_t *) RXDestAddr, 513, 1);
-    }
-
-    /* Clear UART2 RX Interrupt flag after reading data buffer */
-    IFS4CLR = _IFS4_U2RXIF_MASK;
-}
-
-void UART2ErrorCallback()
-{
-    UART2RXCallback();
-    UART2_ErrorGet();
-}
+//void UART2ErrorCallback()
+//{
+//    UART2RXCallback();
+//    UART2_ErrorGet();
+//}
 
 void DMX_Init()
 {
     P1_DIR_CTRL_Set();
-    P2_DIR_CTRL_Clear();
 
     P1_BREAK_CTRL_OutputEnable();
     P1_BREAK_CTRL_Clear();
     TXStep = BREAK;
     
     //UART2 Interrupt Enables
-    IEC4SET = _IEC4_U2EIE_MASK;
-    IEC4SET = _IEC4_U2RXIE_MASK;
+//    IEC4SET = _IEC4_U2EIE_MASK;
+//    IEC4SET = _IEC4_U2RXIE_MASK;
     
     TMR1_CallbackRegister(TMR1Callback, (uintptr_t)NULL);
     DMAC_ChannelCallbackRegister(DMAC_CHANNEL_0, DMAC0_Callback, (uintptr_t)NULL);
-    DMAC_ChannelCallbackRegister(DMAC_CHANNEL_1, DMAC1_Callback, (uintptr_t)NULL);
+//    DMAC_ChannelCallbackRegister(DMAC_CHANNEL_1, DMAC1_Callback, (uintptr_t)NULL);
     //UART Callback is registered in the interrupts file
     
     TMR1_Start();

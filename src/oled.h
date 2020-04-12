@@ -66,7 +66,7 @@ extern "C" {
         Any additional remarks
      */
 
-#define SSD1305_ADDRESS 0x3C
+//#define SSD1305_ADDRESS 0x3C
     
 #define SSD1305_SETLOWCOLUMN 0x00
 #define SSD1305_SETHIGHCOLUMN 0x10
@@ -201,6 +201,7 @@ void OLED_CharASCII(char character, uint8_t column, uint8_t page);
 void OLED_String(char* str, uint8_t len, uint8_t column, uint8_t page);
 bool OLED_IsReady();
 void OLED_ClearLine(uint8_t line);
+void OLED_SPICallback(uintptr_t context);
 
     /* Provide C++ Compatibility */
 #ifdef __cplusplus

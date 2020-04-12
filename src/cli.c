@@ -67,6 +67,13 @@ enum CommandSectionCompleteStatus
     CLI_COMMAND_SECTION_ERROR
 };
 
+enum commandActionType
+{
+    CLI_ACTION_SET_CHANNEL_VALUES,
+    CLI_ACTION_RECORD_PRESET,
+    CLI_ACTION_PLAY_PRESET
+};
+
 struct CLI_Data {
     uint16_t command[CLI_MAX_ITEMS];
     uint8_t counter;
@@ -76,6 +83,12 @@ struct CLI_Data {
 };
 
 struct CLI_Data cliData;
+
+uint8_t presetData[CLI_PRESET_COUNT][512];
+int16_t fadeCoefficient[512];
+uint16_t fadeTracker[512];
+uint16_t fadeWaitTicks;
+uint16_t fadeWaitTracker;
 //uint16_t concat[CLI_MAX_ITEMS];
 //struct CommandSectionData csData[CLI_MAX_ITEMS];
 
@@ -176,10 +189,10 @@ struct CLI_Data cliData;
         uint8_t lowVal = 0;
         uint8_t highVal = 0;
         int16_t valIncDec = 0;
-        uint16_t offset = 0;
-        uint16_t offsetShift = 0;
+        uint16_t offset = 1;
         uint8_t time = 0;
         uint8_t presetNum = 0;
+        enum commandActionType cmdAction = CLI_ACTION_SET_CHANNEL_VALUES;
         enum CommandSectionCompleteStatus cmdStatus = CLI_COMMAND_SECTION_NEW;
         
         for(i = 0; i < cliData.counter; i++)
@@ -196,13 +209,13 @@ struct CLI_Data cliData;
                         
                     lowVal = 0;
                     highVal = 0;
-                    offset = 0;
-                    offsetShift = 0;
+                    offset = 1;
                     time = 0;
                     presetNum = 0;
                     thruPrefix = CLI_COMMAND_START;
                     useTXActiveChannels = false;
                     valIncDec = 0;
+                    cmdAction = CLI_ACTION_SET_CHANNEL_VALUES;
                     switch(cliData.command[i])
                     {
                         case Record:
@@ -525,13 +538,75 @@ struct CLI_Data cliData;
                     }
                     break;
                 case CLI_COMMAND_SECTION_TIME:
+                    switch(cliData.command[i])
+                    {
+                        case SWITCH_VALID_TIME:
+                            time = cliData.command[i];
+                            cmdStatus = CLI_COMMAND_SECTION_TIME_ENTERED;
+                            break;
+                        default:
+                            cmdStatus = CLI_COMMAND_SECTION_ERROR;
+                            break;
+                    }
+                    break;
                 case CLI_COMMAND_SECTION_TIME_ENTERED:
+                    switch(cliData.command[i])
+                    {
+                        case Enter:
+                            cmdStatus = CLI_COMMAND_COMPLETE;
+                            break;
+                        default:
+                            cmdStatus = CLI_COMMAND_SECTION_ERROR;
+                            break;
+                    }
+                    break;
                 case CLI_COMMAND_SECTION_RECORD:
+                    switch(cliData.command[i])
+                    {
+                        case SWITCH_VALID_PRESETS:
+                            presetNum = cliData.command[i];
+                            cmdStatus = CLI_COMMAND_SECTION_RECORD_ENTERED;
+                            break;
+                        default:
+                            cmdStatus = CLI_COMMAND_SECTION_ERROR;
+                            break;
+                    }
+                    break;
                 case CLI_COMMAND_SECTION_RECORD_ENTERED:
+                    switch(cliData.command[i])
+                    {
+                        case Enter:
+                            cmdAction = CLI_ACTION_RECORD_PRESET;
+                            cmdStatus = CLI_COMMAND_COMPLETE;
+                            break;
+                        default:
+                            cmdStatus = CLI_COMMAND_SECTION_ERROR;
+                            break;
+                    }
+                    break;
                 case CLI_COMMAND_SECTION_PLAYBACK:
+                    switch(cliData.command[i])
+                    {
+                        case SWITCH_VALID_PRESETS:
+                            presetNum = cliData.command[i];
+                            cmdStatus = CLI_COMMAND_SECTION_PLAYBACK_ENTERED;
+                            break;
+                        default:
+                            cmdStatus = CLI_COMMAND_SECTION_ERROR;
+                            break;
+                    }
+                    break;
                 case CLI_COMMAND_SECTION_PLAYBACK_ENTERED:
-                    cmdStatus = CLI_COMMAND_SECTION_COMPLETE;
-                    //Implement these
+                    switch(cliData.command[i])
+                    {
+                        case Enter:
+                            cmdAction = CLI_ACTION_PLAY_PRESET;
+                            cmdStatus = CLI_COMMAND_SECTION_COMPLETE;
+                            break;
+                        default:
+                            cmdStatus = CLI_COMMAND_SECTION_ERROR;
+                            break;
+                    }
                     break;
                 case CLI_COMMAND_SECTION_COMPLETE:
                 case CLI_COMMAND_COMPLETE:
@@ -542,64 +617,72 @@ struct CLI_Data cliData;
             
             if(cmdStatus == CLI_COMMAND_SECTION_COMPLETE || cmdStatus == CLI_COMMAND_COMPLETE)
             {
-                uint32_t fanAmount;
-                uint16_t k = 0, secActiveChannelCount = 0;
-                if((lowVal || highVal) && valIncDec)    //Setting literal values AND Inc/Decrementing
-                    cmdStatus = CLI_COMMAND_SECTION_ERROR;
-                else
+                if(cmdAction == CLI_ACTION_SET_CHANNEL_VALUES)
                 {
-                    if(useTXActiveChannels)
-                    {
-                        for(j = 1; j < 513; j++)
-                        {
-                            if(*(cliData.values + j))
-                            {
-                                secActiveChannels[j] = true;
-                                if(!activeChannels[j])
-                                    chVals[j] = *(cliData.values + j);
-                            }
-                        }
-                    }
-                    for(j = 1; j < 513; j++)
-                    {
-                        if(secActiveChannels[j])
-                        {
-                            //deal with offset and shift
-                            activeChannels[j] = true;
-                            secActiveChannelCount++;
-                        }
-                    }
-                    if(valIncDec == 0)
-                    {
-                        if(secActiveChannelCount == 1 || secActiveChannelCount == 0)
-                            fanAmount = 0;
-                        else
-                        {
-                            fanAmount = ((highVal - lowVal) * 10000) / (secActiveChannelCount - 1);
-                        }
-                        for(j = 0; j < 513; j++)
-                        {
-                            if(secActiveChannels[j])
-                            {
-                                chVals[j] = lowVal + ((fanAmount * k) / 10000);
-                                k++;
-                            }
-                        }
-                    }
+                    uint32_t fanAmount;
+                    uint16_t k = 0, l = offset, secActiveChannelCount = 0;
+                    if((lowVal || highVal) && valIncDec)    //Setting literal values AND Inc/Decrementing
+                        cmdStatus = CLI_COMMAND_SECTION_ERROR;
                     else
                     {
-                        for(j = 0; j < 513; j++)
+                        if(useTXActiveChannels)
+                        {
+                            for(j = 1; j < 513; j++)
+                            {
+                                if(*(cliData.values + j))
+                                {
+                                    secActiveChannels[j] = true;
+                                    if(!activeChannels[j])
+                                        chVals[j] = *(cliData.values + j);
+                                }
+                            }
+                        }
+                        for(j = 1; j < 513; j++)
                         {
                             if(secActiveChannels[j])
                             {
-                                if(chVals[j] < valIncDec)
-                                    chVals[j] = 0;
-                                chVals[j] = chVals[j] + valIncDec;
+                                if(l == offset)
+                                {
+                                    activeChannels[j] = true;
+                                    secActiveChannelCount++;
+                                    l = 0;
+                                }
+                                l++;
+                            }
+                        }
+                        if(valIncDec == 0)
+                        {
+                            if(secActiveChannelCount == 1 || secActiveChannelCount == 0)
+                                fanAmount = 0;
+                            else
+                            {
+                                fanAmount = ((highVal - lowVal) * 10000) / (secActiveChannelCount - 1);
+                            }
+                            for(j = 0; j < 513; j++)
+                            {
+                                if(secActiveChannels[j])
+                                {
+                                    chVals[j] = lowVal + ((fanAmount * k) / 10000);
+                                    k++;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            for(j = 0; j < 513; j++)
+                            {
+                                if(secActiveChannels[j])
+                                {
+                                    if(chVals[j] < valIncDec)
+                                        chVals[j] = 0;
+                                    chVals[j] = chVals[j] + valIncDec;
+                                }
                             }
                         }
                     }
                 }
-                if(offset || offsetShift || time || presetNum); 
+                
+                if(time); 
                 //Currently unused variables, need to be acted upon
             }
             if(cmdStatus == CLI_COMMAND_COMPLETE || 
@@ -614,10 +697,63 @@ struct CLI_Data cliData;
         
         if(cmdStatus == CLI_COMMAND_COMPLETE)
         {
-            for(j = 1; j < 513; j++)
+            TMR3_Stop();
+            if(time == 0)
             {
-                if(activeChannels[j])
-                    *(cliData.values + j) = chVals[j];
+                switch(cmdAction)
+                {
+                    case CLI_ACTION_SET_CHANNEL_VALUES:
+                        for(j = 1; j < 513; j++)
+                        {
+                            if(activeChannels[j])
+                                *(cliData.values + j) = chVals[j];
+                        }
+                        break;
+                    case CLI_ACTION_PLAY_PRESET:
+                        for(j = 1; j < 513; j++)
+                        {
+                            *(cliData.values + j) = presetData[presetNum][j];
+                        }
+                        break;
+                    case CLI_ACTION_RECORD_PRESET:
+                        for(j = 1; j < 513; j++)
+                        {
+                            presetData[presetNum][j] = *(cliData.values + j);
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            }
+            else
+            {
+                fadeWaitTracker = 0;
+                fadeWaitTicks = time;
+                switch(cmdAction)
+                {
+                    case CLI_ACTION_SET_CHANNEL_VALUES:
+                        for(j = 1; j < 513; j++)
+                        {
+                            fadeTracker[j - 1] = *(cliData.values + j) * CLI_TICKS_PER_SECOND;
+                            if(!activeChannels[j])
+                                fadeCoefficient[j - 1] = 0;
+                            else
+                                fadeCoefficient[j - 1] = 
+                                        chVals[j] - *(cliData.values + j);
+                        }
+                        break;
+                    case CLI_ACTION_PLAY_PRESET:
+                        for(j = 1; j < 513; j++)
+                        {
+                            fadeTracker[j - 1] = *(cliData.values + j) * CLI_TICKS_PER_SECOND;
+                            fadeCoefficient[j - 1] = 
+                                    presetData[presetNum][j] -  *(cliData.values + j);
+                        }
+                        break;
+                    default:
+                        break;
+                }
+                TMR3_Start();
             }
         }
         return true;
@@ -705,6 +841,21 @@ struct CLI_Data cliData;
         OLED_DrawScreen();
     }
     
+    void CLI_Timer_Callback (uint32_t status, uintptr_t context)
+    {
+        uint16_t j;
+        fadeWaitTracker++;
+        if(!(fadeWaitTracker % fadeWaitTicks))
+        {
+            for(j = 1; j < 513; j++)
+            {
+                fadeTracker[j - 1] += fadeCoefficient[j - 1];
+                *(cliData.values + j) = fadeTracker[j - 1] >> 8;
+            }
+        }
+        if(fadeWaitTracker == fadeWaitTicks * CLI_TICKS_PER_SECOND)
+            TMR3_Stop();
+    }
     
 
 
@@ -786,6 +937,8 @@ struct CLI_Data cliData;
         cliData.chLow = 1;
         cliData.chHigh = 512;
         cliData.values = dmxBuf;
+        
+        TMR3_CallbackRegister(CLI_Timer_Callback, (uintptr_t) NULL);
     }
     
     void CLI_AddToCommand(uint16_t function)
