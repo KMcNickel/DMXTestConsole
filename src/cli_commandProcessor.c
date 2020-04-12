@@ -24,12 +24,7 @@
 /* This section lists the other files that are included in this file.
  */
 
-#include <stddef.h>                     // Defines NULL
-#include <stdbool.h>                    // Defines true
-#include <stdlib.h>                     // Defines EXIT_FAILURE
-#include "definitions.h"                // SYS function prototypes
-#include "keypad.h"
-#include "cli.h"
+/* TODO:  Include other files here if needed. */
 
 
 /* ************************************************************************** */
@@ -59,25 +54,7 @@
   @Remarks
     Any additional remarks
  */
-
-enum ButtonState
-{
-    KEYPAD_BUTTON_RELEASED,
-    KEYPAD_BUTTON_PRESSED,
-    KEYPAD_BUTTON_ACTIVATED,
-    KEYPAD_BUTTON_PROCESSED
-};
-
-enum ButtonState buttonStates[24];
-uint8_t buttonCounter[24];
-uint32_t rawKeypadData;
-
-uint16_t keypadMapping[] = 
-{
-    8, 5, 2, 0, Clear, 1, 4, 7,                             // 1A - H
-    Thru, At, Full, Enter, Bksp, 3, 6, 9,                   // 2A - H
-    Preset, Time, Next, Plus, Minus, Last, Offset, Record   // 3A - H
-};
+int global_data;
 
 
 /* ************************************************************************** */
@@ -135,6 +112,9 @@ uint16_t keypadMapping[] =
         return 3;
     }
  */
+static int ExampleLocalFunction(int param1, int param2) {
+    return 0;
+}
 
 
 /* ************************************************************************** */
@@ -159,71 +139,8 @@ uint16_t keypadMapping[] =
   @Remarks
     Refer to the example_file.h interface header for function usage details.
  */
-
-static void TMR2Callback (uint32_t status, uintptr_t context)
-{
-    TMR2_Stop();
-    KEYPAD_PL_Set();
-    SPI2_Read(&rawKeypadData, 3);
-}
-
-void Keypad_SPICallback (uintptr_t context)
-{
-    uint8_t i;
-
-    KEYPAD_PL_Clear();
-
-    for(i = 0; i < 24; i++)
-    {
-        if(((rawKeypadData >> i) & 1) == 0 && 
-                buttonStates[i] != KEYPAD_BUTTON_ACTIVATED &&
-                buttonStates[i] != KEYPAD_BUTTON_PROCESSED)
-        {
-            buttonStates[i] = KEYPAD_BUTTON_PRESSED;
-            buttonCounter[i]++;
-        }
-        else if(((rawKeypadData >> i) & 1) == 1)
-        {
-            buttonStates[i] = KEYPAD_BUTTON_RELEASED;
-            buttonCounter[i] = 0;
-        }
-        if(buttonCounter[i] == DEBOUNCE_COUNT)
-        {
-            buttonStates[i] = KEYPAD_BUTTON_ACTIVATED;
-            buttonCounter[i] = 0;
-        }
-    }
-    
-    TMR2_Start();
-}
-
-void Keypad_ProcessButtonPress()
-{
-    uint8_t i;
-    for(i = 0; i < 24; i++)
-    {
-        if(buttonStates[i] == KEYPAD_BUTTON_ACTIVATED)
-        {
-            CLI_AddToCommand(keypadMapping[i]);
-            buttonStates[i] = KEYPAD_BUTTON_PROCESSED;
-            break;
-        }
-    }
-}
-
-void Keypad_Init()
-{
-    TMR2_CallbackRegister(TMR2Callback, (uintptr_t)NULL);
-    
-    uint8_t i;
-    for(i = 0; i < 16; i++)
-    {
-        buttonStates[i] = KEYPAD_BUTTON_RELEASED;
-        buttonCounter[i] = 0;
-    }
-    
-    KEYPAD_PL_Clear();
-    TMR2_Start();
+int ExampleInterfaceFunction(int param1, int param2) {
+    return 0;
 }
 
 
