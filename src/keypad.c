@@ -163,6 +163,7 @@ uint16_t keypadMapping[] =
 static void TMR2Callback (uint32_t status, uintptr_t context)
 {
     TMR2_Stop();
+    while(!UI_SetActiveDevice(UI_DEVICE_KEYPAD));
     KEYPAD_PL_Set();
     SPI2_Read(&rawKeypadData, 3);
 }
@@ -216,7 +217,7 @@ void Keypad_Init()
     TMR2_CallbackRegister(TMR2Callback, (uintptr_t)NULL);
     
     uint8_t i;
-    for(i = 0; i < 16; i++)
+    for(i = 0; i < 24; i++)
     {
         buttonStates[i] = KEYPAD_BUTTON_RELEASED;
         buttonCounter[i] = 0;

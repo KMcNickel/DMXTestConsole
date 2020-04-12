@@ -850,7 +850,7 @@ uint16_t fadeWaitTracker;
             for(j = 1; j < 513; j++)
             {
                 fadeTracker[j - 1] += fadeCoefficient[j - 1];
-                *(cliData.values + j) = fadeTracker[j - 1] >> 8;
+                *(cliData.values + j) = fadeTracker[j - 1] >> 7;
             }
         }
         if(fadeWaitTracker == fadeWaitTicks * CLI_TICKS_PER_SECOND)

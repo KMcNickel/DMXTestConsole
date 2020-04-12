@@ -100,12 +100,10 @@ extern "C" {
         Describe enumeration elements and structure and union members above each 
         element or member.
      */
-
-    uint8_t l_A[] = { 0x7E, 0x88, 0x88, 0x88, 0x7E };
-    uint8_t l_B[] = { 0xFE, 0x92, 0x92, 0x92, 0x6C };
-    uint8_t l_C[] = { 0x7C, 0x82, 0x82, 0x82, 0x44 };
-    uint8_t l_D[] = { 0xFE, 0x82, 0x82, 0x44, 0x38 };
     
+    //Font table based from noopkat on GitHub with the MIT License
+    //https://github.com/noopkat/oled-font-5x7/blob/master/oled-font-5x7.js
+
     uint8_t no_char[] = {0x7F, 0x41, 0x41, 0x41, 0x7F};  //No Char (box)
     
     uint8_t font_table[][5] = {
