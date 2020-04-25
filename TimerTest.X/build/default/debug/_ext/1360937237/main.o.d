@@ -1,8 +1,6 @@
 build/default/debug/_ext/1360937237/main.o:  \
 ../src/main.c  \
  ../src/config/default/definitions.h  \
- ../src/config/default/peripheral/i2c/plib_i2c2.h  \
- ../src/config/default/peripheral/i2c/plib_i2c_master.h  \
  ../src/config/default/peripheral/uart/plib_uart1.h  \
  ../src/packs/PIC32MZ2048EFM100_DFP/device.h  \
  ../src/config/default/toolchain_specifics.h  \

@@ -5,27 +5,27 @@ c:/program files (x86)/microchip/xc32/v2.30/bin/bin/../../lib/gcc/pic32mx/4.8.3/
 c:/program files (x86)/microchip/xc32/v2.30/bin/bin/../../lib/gcc/pic32mx/4.8.3/../../../../pic32mx/lib/fpu64\libpic32.a(strlen.o)
                               build/default/production/_ext/1360937237/cli.o (strlen)
 c:/program files (x86)/microchip/xc32/v2.30/bin/bin/../../lib/gcc/pic32mx/4.8.3/../../../../pic32mx/lib/fpu64\libpic32.a(default-bootstrap-exception-handler.o)
-                              C:\Users\Kyle\AppData\Local\Temp\ccYgOs1h.o (_bootstrap_exception_handler)
+                              C:\Users\Kyle\AppData\Local\Temp\ccIRuq4I.o (_bootstrap_exception_handler)
 c:/program files (x86)/microchip/xc32/v2.30/bin/bin/../../lib/gcc/pic32mx/4.8.3/../../../../pic32mx/lib/fpu64\libpic32.a(default-on-reset.o)
-                              C:\Users\Kyle\AppData\Local\Temp\ccYgOs1h.o (_on_reset)
+                              C:\Users\Kyle\AppData\Local\Temp\ccIRuq4I.o (_on_reset)
 c:/program files (x86)/microchip/xc32/v2.30/bin/bin/../../lib/gcc/pic32mx/4.8.3/../../../../pic32mx/lib/fpu64\libpic32.a(default-on-bootstrap.o)
-                              C:\Users\Kyle\AppData\Local\Temp\ccYgOs1h.o (_on_bootstrap)
+                              C:\Users\Kyle\AppData\Local\Temp\ccIRuq4I.o (_on_bootstrap)
 c:/program files (x86)/microchip/xc32/v2.30/bin/bin/../../lib/gcc/pic32mx/4.8.3/../../../../pic32mx/lib/fpu64\libpic32.a(default-nmi-handler.o)
-                              C:\Users\Kyle\AppData\Local\Temp\ccYgOs1h.o (_nmi_handler)
+                              C:\Users\Kyle\AppData\Local\Temp\ccIRuq4I.o (_nmi_handler)
 c:/program files (x86)/microchip/xc32/v2.30/bin/bin/../../lib/gcc/pic32mx/4.8.3/../../../../pic32mx/lib/fpu64\libpic32.a(pic32_data_init.o)
-                              C:\Users\Kyle\AppData\Local\Temp\ccYgOs1h.o (__pic32_data_init)
+                              C:\Users\Kyle\AppData\Local\Temp\ccIRuq4I.o (__pic32_data_init)
 c:/program files (x86)/microchip/xc32/v2.30/bin/bin/../../lib/gcc/pic32mx/4.8.3/../../../../pic32mx/lib/fpu64\libpic32.a(pic32_init_cache.o)
-                              C:\Users\Kyle\AppData\Local\Temp\ccYgOs1h.o (__pic32_init_cache)
+                              C:\Users\Kyle\AppData\Local\Temp\ccIRuq4I.o (__pic32_init_cache)
 c:/program files (x86)/microchip/xc32/v2.30/bin/bin/../../lib/gcc/pic32mx/4.8.3/../../../../pic32mx/lib/fpu64\libpic32.a(pic32_init_tlb_ebi_sqi.o)
-                              C:\Users\Kyle\AppData\Local\Temp\ccYgOs1h.o (__pic32_tlb_init_ebi_sqi)
+                              C:\Users\Kyle\AppData\Local\Temp\ccIRuq4I.o (__pic32_tlb_init_ebi_sqi)
 c:/program files (x86)/microchip/xc32/v2.30/bin/bin/../../lib/gcc/pic32mx/4.8.3/../../../../pic32mx/lib/fpu64\libpic32.a(general-exception.o)
-                              C:\Users\Kyle\AppData\Local\Temp\ccYgOs1h.o (_general_exception_context)
+                              C:\Users\Kyle\AppData\Local\Temp\ccIRuq4I.o (_general_exception_context)
 c:/program files (x86)/microchip/xc32/v2.30/bin/bin/../../lib/gcc/pic32mx/4.8.3/../../../../pic32mx/lib/fpu64\libpic32.a(cache-err-exception.o)
-                              C:\Users\Kyle\AppData\Local\Temp\ccYgOs1h.o (_cache_err_exception_context)
+                              C:\Users\Kyle\AppData\Local\Temp\ccIRuq4I.o (_cache_err_exception_context)
 c:/program files (x86)/microchip/xc32/v2.30/bin/bin/../../lib/gcc/pic32mx/4.8.3/../../../../pic32mx/lib/fpu64\libpic32.a(simple-tlb-refill-exception.o)
-                              C:\Users\Kyle\AppData\Local\Temp\ccYgOs1h.o (_simple_tlb_refill_exception_context)
+                              C:\Users\Kyle\AppData\Local\Temp\ccIRuq4I.o (_simple_tlb_refill_exception_context)
 c:/program files (x86)/microchip/xc32/v2.30/bin/bin/../../lib/gcc/pic32mx/4.8.3/../../../../pic32mx/lib/fpu64\libpic32.a(defaultinterrupt.o)
-                              C:\Users\Kyle\AppData\Local\Temp\ccqy9bY9.o (_DefaultInterrupt)
+                              C:\Users\Kyle\AppData\Local\Temp\ccDcikLS.o (_DefaultInterrupt)
 c:/program files (x86)/microchip/xc32/v2.30/bin/bin/../../lib/gcc/pic32mx/4.8.3/../../../../pic32mx/lib/fpu64\libpic32.a(default-cache-err-exception-handler.o)
                               c:/program files (x86)/microchip/xc32/v2.30/bin/bin/../../lib/gcc/pic32mx/4.8.3/../../../../pic32mx/lib/fpu64\libpic32.a(cache-err-exception.o) (_cache_err_exception_handler)
 c:/program files (x86)/microchip/xc32/v2.30/bin/bin/../../lib/gcc/pic32mx/4.8.3/../../../../pic32mx/lib/fpu64\libpic32.a(default-simple-tlb-refill-exception-handler.o)
@@ -514,19 +514,19 @@ Discarded input sections
                 0x00000000       0x28 build/default/production/_ext/60181018/plib_spi2.o
  .text.SPI2_CallbackRegister
                 0x00000000       0x14 build/default/production/_ext/60181018/plib_spi2.o
- .text          0x00000000        0x0 C:\Users\Kyle\AppData\Local\Temp\ccYgOs1h.o
- .data          0x00000000        0x0 C:\Users\Kyle\AppData\Local\Temp\ccYgOs1h.o
- .bss           0x00000000        0x0 C:\Users\Kyle\AppData\Local\Temp\ccYgOs1h.o
- .reginfo       0x00000000       0x18 C:\Users\Kyle\AppData\Local\Temp\ccYgOs1h.o
- .text          0x00000000        0x0 C:\Users\Kyle\AppData\Local\Temp\cchj3Nq8.o
- .data          0x00000000        0x0 C:\Users\Kyle\AppData\Local\Temp\cchj3Nq8.o
- .bss           0x00000000        0x0 C:\Users\Kyle\AppData\Local\Temp\cchj3Nq8.o
- .reginfo       0x00000000       0x18 C:\Users\Kyle\AppData\Local\Temp\cchj3Nq8.o
- .text          0x00000000        0x0 C:\Users\Kyle\AppData\Local\Temp\ccqy9bY9.o
- .data          0x00000000        0x0 C:\Users\Kyle\AppData\Local\Temp\ccqy9bY9.o
- .bss           0x00000000        0x0 C:\Users\Kyle\AppData\Local\Temp\ccqy9bY9.o
- .reginfo       0x00000000       0x18 C:\Users\Kyle\AppData\Local\Temp\ccqy9bY9.o
- .discard       0x00000000        0x4 C:\Users\Kyle\AppData\Local\Temp\ccqy9bY9.o
+ .text          0x00000000        0x0 C:\Users\Kyle\AppData\Local\Temp\ccIRuq4I.o
+ .data          0x00000000        0x0 C:\Users\Kyle\AppData\Local\Temp\ccIRuq4I.o
+ .bss           0x00000000        0x0 C:\Users\Kyle\AppData\Local\Temp\ccIRuq4I.o
+ .reginfo       0x00000000       0x18 C:\Users\Kyle\AppData\Local\Temp\ccIRuq4I.o
+ .text          0x00000000        0x0 C:\Users\Kyle\AppData\Local\Temp\cc6EB29M.o
+ .data          0x00000000        0x0 C:\Users\Kyle\AppData\Local\Temp\cc6EB29M.o
+ .bss           0x00000000        0x0 C:\Users\Kyle\AppData\Local\Temp\cc6EB29M.o
+ .reginfo       0x00000000       0x18 C:\Users\Kyle\AppData\Local\Temp\cc6EB29M.o
+ .text          0x00000000        0x0 C:\Users\Kyle\AppData\Local\Temp\ccDcikLS.o
+ .data          0x00000000        0x0 C:\Users\Kyle\AppData\Local\Temp\ccDcikLS.o
+ .bss           0x00000000        0x0 C:\Users\Kyle\AppData\Local\Temp\ccDcikLS.o
+ .reginfo       0x00000000       0x18 C:\Users\Kyle\AppData\Local\Temp\ccDcikLS.o
+ .discard       0x00000000        0x4 C:\Users\Kyle\AppData\Local\Temp\ccDcikLS.o
  .data          0x00000000        0x0 c:/program files (x86)/microchip/xc32/v2.30/bin/bin/../../lib/gcc/pic32mx/4.8.3/../../../../pic32mx/lib/fpu64\pic32_software_reset.o
  .bss           0x00000000        0x0 c:/program files (x86)/microchip/xc32/v2.30/bin/bin/../../lib/gcc/pic32mx/4.8.3/../../../../pic32mx/lib/fpu64\pic32_software_reset.o
  .reginfo       0x00000000       0x18 c:/program files (x86)/microchip/xc32/v2.30/bin/bin/../../lib/gcc/pic32mx/4.8.3/../../../../pic32mx/lib/fpu64\pic32_software_reset.o
@@ -832,9 +832,9 @@ LOAD build/default/production/_ext/1865638794/plib_tmr1.o
 LOAD build/default/production/_ext/60181018/plib_spi2.o
                 0x00000001                __MPLAB_BUILD = 0x1
                 0x00000200                _min_heap_size = 0x200
-LOAD C:\Users\Kyle\AppData\Local\Temp\ccYgOs1h.o
-LOAD C:\Users\Kyle\AppData\Local\Temp\cchj3Nq8.o
-LOAD C:\Users\Kyle\AppData\Local\Temp\ccqy9bY9.o
+LOAD C:\Users\Kyle\AppData\Local\Temp\ccIRuq4I.o
+LOAD C:\Users\Kyle\AppData\Local\Temp\cc6EB29M.o
+LOAD C:\Users\Kyle\AppData\Local\Temp\ccDcikLS.o
 LOAD c:/program files (x86)/microchip/xc32/v2.30/bin/bin/../../lib/gcc/pic32mx/4.8.3/../../../../pic32mx/lib/fpu64\pic32_software_reset.o
                 0x00000400                PROVIDE (_min_stack_size, 0x400)
 START GROUP
@@ -1280,16 +1280,16 @@ END GROUP
 
 .reset          0xbfc00000      0x1b4
  *(.reset)
- .reset         0xbfc00000       0x18 C:\Users\Kyle\AppData\Local\Temp\ccYgOs1h.o
+ .reset         0xbfc00000       0x18 C:\Users\Kyle\AppData\Local\Temp\ccIRuq4I.o
                 0xbfc00000                _reset
  *(.reset.startup)
  .reset.startup
-                0xbfc00018      0x19c C:\Users\Kyle\AppData\Local\Temp\ccYgOs1h.o
+                0xbfc00018      0x19c C:\Users\Kyle\AppData\Local\Temp\ccIRuq4I.o
                 0xbfc00018                _startup
 
 .bev_excpt      0xbfc00380       0x10
  *(.bev_handler)
- .bev_handler   0xbfc00380       0x10 C:\Users\Kyle\AppData\Local\Temp\ccYgOs1h.o
+ .bev_handler   0xbfc00380       0x10 C:\Users\Kyle\AppData\Local\Temp\ccIRuq4I.o
 
 .cache_init     0xbfc004b0      0x1c0
  *(.cache_init)
@@ -1304,17 +1304,17 @@ END GROUP
                 0x9d000000       0x10
  *(.simple_tlb_refill_vector)
  .simple_tlb_refill_vector
-                0x9d000000       0x10 C:\Users\Kyle\AppData\Local\Temp\ccYgOs1h.o
+                0x9d000000       0x10 C:\Users\Kyle\AppData\Local\Temp\ccIRuq4I.o
 
 .cache_err_excpt
                 0x9d000100       0x10
  *(.cache_err_vector)
  .cache_err_vector
-                0x9d000100       0x10 C:\Users\Kyle\AppData\Local\Temp\ccYgOs1h.o
+                0x9d000100       0x10 C:\Users\Kyle\AppData\Local\Temp\ccIRuq4I.o
 
 .app_excpt      0x9d000180       0x10
  *(.gen_handler)
- .gen_handler   0x9d000180       0x10 C:\Users\Kyle\AppData\Local\Temp\ccYgOs1h.o
+ .gen_handler   0x9d000180       0x10 C:\Users\Kyle\AppData\Local\Temp\ccIRuq4I.o
 
 .vectors        0x9d000200       0xc0
                 0x9d000200                . = ALIGN (0x4)
@@ -3413,7 +3413,7 @@ LOAD data_init
 .text.main_entry
                 0x9d005668       0x54
  .text.main_entry
-                0x9d005668       0x54 C:\Users\Kyle\AppData\Local\Temp\ccYgOs1h.o
+                0x9d005668       0x54 C:\Users\Kyle\AppData\Local\Temp\ccIRuq4I.o
                 0x9d00569c                __crt0_exit
 
 .text.main      0x9d0056bc       0x4c
