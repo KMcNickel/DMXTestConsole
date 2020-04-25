@@ -30,6 +30,7 @@
 #include "definitions.h"                // SYS function prototypes
 #include "keypad.h"
 #include "cli.h"
+#include "UI.h"
 
 
 /* ************************************************************************** */

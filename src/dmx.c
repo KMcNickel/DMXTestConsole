@@ -169,7 +169,6 @@ void StartBreak()
 {
     TMR1_Stop();
     ResetTimer1(1150);
-    P1_BREAK_CTRL_OutputEnable();
     P1_BREAK_CTRL_Clear();
 }
 
@@ -182,7 +181,6 @@ static void TMR1Callback (uint32_t status, uintptr_t context)
             ResetTimer1(150);
             TXStep = MAB;
             P1_BREAK_CTRL_Set();
-            P1_BREAK_CTRL_InputEnable();
             break;
         case MAB:   //12uS
             TMR1_Stop();
@@ -260,7 +258,6 @@ void DMX_Init()
 {
     P1_DIR_CTRL_Set();
 
-    P1_BREAK_CTRL_OutputEnable();
     P1_BREAK_CTRL_Clear();
     TXStep = BREAK;
     

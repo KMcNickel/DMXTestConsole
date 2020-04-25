@@ -44,11 +44,12 @@ int main ( void )
     /* Initialize all modules */
     SYS_Initialize ( NULL );
     
-    UI_Init();
+    //UI_Init();
+    OLED_Init();
     
-    DMX_Init();
+    //DMX_Init();
     
-    CLI_Init(TXSrcAddr);
+    //CLI_Init(TXSrcAddr);
     
     while(!OLED_IsReady());
     OLED_String("System Running", 14, 0, 0);
@@ -56,7 +57,7 @@ int main ( void )
 
     while ( true )
     {
-        Keypad_ProcessButtonPress();
+        //Keypad_ProcessButtonPress();
         /* Maintain state machines of all polled MPLAB Harmony modules. */
         SYS_Tasks ( );
     }

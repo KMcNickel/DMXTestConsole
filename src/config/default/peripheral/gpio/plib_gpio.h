@@ -62,37 +62,29 @@
 // *****************************************************************************
 
 /*** Macros for KEYPAD_PL pin ***/
-#define KEYPAD_PL_Set()               (LATESET = (1<<6))
-#define KEYPAD_PL_Clear()             (LATECLR = (1<<6))
-#define KEYPAD_PL_Toggle()            (LATEINV= (1<<6))
-#define KEYPAD_PL_Get()               ((PORTE >> 6) & 0x1)
-#define KEYPAD_PL_OutputEnable()      (TRISECLR = (1<<6))
-#define KEYPAD_PL_InputEnable()       (TRISESET = (1<<6))
-#define KEYPAD_PL_PIN                  GPIO_PIN_RE6
-/*** Macros for OLED_DC pin ***/
-#define OLED_DC_Set()               (LATESET = (1<<7))
-#define OLED_DC_Clear()             (LATECLR = (1<<7))
-#define OLED_DC_Toggle()            (LATEINV= (1<<7))
-#define OLED_DC_Get()               ((PORTE >> 7) & 0x1)
-#define OLED_DC_OutputEnable()      (TRISECLR = (1<<7))
-#define OLED_DC_InputEnable()       (TRISESET = (1<<7))
-#define OLED_DC_PIN                  GPIO_PIN_RE7
-/*** Macros for OLED_RST pin ***/
-#define OLED_RST_Set()               (LATGSET = (1<<8))
-#define OLED_RST_Clear()             (LATGCLR = (1<<8))
-#define OLED_RST_Toggle()            (LATGINV= (1<<8))
-#define OLED_RST_Get()               ((PORTG >> 8) & 0x1)
-#define OLED_RST_OutputEnable()      (TRISGCLR = (1<<8))
-#define OLED_RST_InputEnable()       (TRISGSET = (1<<8))
-#define OLED_RST_PIN                  GPIO_PIN_RG8
+#define KEYPAD_PL_Set()               (LATASET = (1<<5))
+#define KEYPAD_PL_Clear()             (LATACLR = (1<<5))
+#define KEYPAD_PL_Toggle()            (LATAINV= (1<<5))
+#define KEYPAD_PL_Get()               ((PORTA >> 5) & 0x1)
+#define KEYPAD_PL_OutputEnable()      (TRISACLR = (1<<5))
+#define KEYPAD_PL_InputEnable()       (TRISASET = (1<<5))
+#define KEYPAD_PL_PIN                  GPIO_PIN_RA5
 /*** Macros for OLED_CS pin ***/
-#define OLED_CS_Set()               (LATGSET = (1<<9))
-#define OLED_CS_Clear()             (LATGCLR = (1<<9))
-#define OLED_CS_Toggle()            (LATGINV= (1<<9))
-#define OLED_CS_Get()               ((PORTG >> 9) & 0x1)
-#define OLED_CS_OutputEnable()      (TRISGCLR = (1<<9))
-#define OLED_CS_InputEnable()       (TRISGSET = (1<<9))
-#define OLED_CS_PIN                  GPIO_PIN_RG9
+#define OLED_CS_Set()               (LATASET = (1<<1))
+#define OLED_CS_Clear()             (LATACLR = (1<<1))
+#define OLED_CS_Toggle()            (LATAINV= (1<<1))
+#define OLED_CS_Get()               ((PORTA >> 1) & 0x1)
+#define OLED_CS_OutputEnable()      (TRISACLR = (1<<1))
+#define OLED_CS_InputEnable()       (TRISASET = (1<<1))
+#define OLED_CS_PIN                  GPIO_PIN_RA1
+/*** Macros for OLED_RST pin ***/
+#define OLED_RST_Set()               (LATFSET = (1<<12))
+#define OLED_RST_Clear()             (LATFCLR = (1<<12))
+#define OLED_RST_Toggle()            (LATFINV= (1<<12))
+#define OLED_RST_Get()               ((PORTF >> 12) & 0x1)
+#define OLED_RST_OutputEnable()      (TRISFCLR = (1<<12))
+#define OLED_RST_InputEnable()       (TRISFSET = (1<<12))
+#define OLED_RST_PIN                  GPIO_PIN_RF12
 /*** Macros for PWR_MUX_SRC pin ***/
 #define PWR_MUX_SRC_Set()               (LATBSET = (1<<12))
 #define PWR_MUX_SRC_Clear()             (LATBCLR = (1<<12))
@@ -101,6 +93,14 @@
 #define PWR_MUX_SRC_OutputEnable()      (TRISBCLR = (1<<12))
 #define PWR_MUX_SRC_InputEnable()       (TRISBSET = (1<<12))
 #define PWR_MUX_SRC_PIN                  GPIO_PIN_RB12
+/*** Macros for OLED_SA0 pin ***/
+#define OLED_SA0_Set()               (LATFSET = (1<<2))
+#define OLED_SA0_Clear()             (LATFCLR = (1<<2))
+#define OLED_SA0_Toggle()            (LATFINV= (1<<2))
+#define OLED_SA0_Get()               ((PORTF >> 2) & 0x1)
+#define OLED_SA0_OutputEnable()      (TRISFCLR = (1<<2))
+#define OLED_SA0_InputEnable()       (TRISFSET = (1<<2))
+#define OLED_SA0_PIN                  GPIO_PIN_RF2
 /*** Macros for P1_DIR_CTRL pin ***/
 #define P1_DIR_CTRL_Set()               (LATDSET = (1<<1))
 #define P1_DIR_CTRL_Clear()             (LATDCLR = (1<<1))

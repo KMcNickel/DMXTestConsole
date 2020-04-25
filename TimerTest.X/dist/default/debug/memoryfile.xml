@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<project>                                  
+  <executable name="dist/default/debug/TimerTest.X.debug.elf">                 
+    <memory name="program">                 
+      <units>bytes</units>                 
+      <length>2098304</length>                 
+      <used>24284</used>                     
+      <free>2074020</free>                     
+    </memory>                              
+    <memory name="data">              
+      <units>bytes</units>                 
+      <length>525184</length>                 
+      <used>4528</used>                     
+      <free>520656</free>                     
+    </memory>                              
+  </executable>                            
+</project>                                 

@@ -129,7 +129,10 @@ bool UI_SetActiveDevice(enum activeDevice device)
 
 void UI_SPI_Callback(uintptr_t callback)
 {
-    switch(curActiveDevice)
+    
+    enum activeDevice device = curActiveDevice;
+    curActiveDevice = UI_DEVICE_NONE;
+    switch(device)
     {
         case UI_DEVICE_KEYPAD:
             Keypad_SPICallback((uintptr_t) NULL);
@@ -140,7 +143,6 @@ void UI_SPI_Callback(uintptr_t callback)
         default:
             break;
     }
-    curActiveDevice = UI_DEVICE_NONE;
 }
 
 /* ************************************************************************** */
@@ -168,7 +170,7 @@ void UI_SPI_Callback(uintptr_t callback)
 
 void UI_Init()
 {
-    Keypad_Init();
+    //Keypad_Init();
     OLED_Init();
     
     SPI2_CallbackRegister(UI_SPI_Callback, (uintptr_t)NULL);

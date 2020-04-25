@@ -66,7 +66,7 @@ extern "C" {
         Any additional remarks
      */
 
-//#define SSD1305_ADDRESS 0x3C
+#define SSD1305_ADDRESS 0x3C
     
 #define SSD1305_SETLOWCOLUMN 0x00
 #define SSD1305_SETHIGHCOLUMN 0x10
